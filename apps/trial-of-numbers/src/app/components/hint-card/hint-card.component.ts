@@ -8,32 +8,46 @@ import { HintCard } from '../../models/game.interface';
   imports: [CommonModule],
   template: `
     @if (hint) {
-    <div
+    <button
       class="hint-card"
       [class.flipped]="hint.isFlipped"
       [class.selectable]="selectable"
+      [disabled]="!selectable"
       (click)="onCardClick()"
+      (keydown.enter)="onCardClick()"
+      (keydown.space)="onCardClick()"
+      [attr.aria-label]="'Hint card: ' + hint.text"
     >
       <div class="card-content">
         <span class="card-text">{{ hint.text }}</span>
         <span class="card-type">{{ hint.type }}</span>
       </div>
-    </div>
+    </button>
     }
   `,
   styles: [
     `
       .hint-card {
+        width: 100%;
         padding: 1rem;
         background: #fff;
         border: 1px solid #ddd;
         border-radius: 4px;
         cursor: pointer;
         transition: all 0.3s ease;
+        text-align: left;
 
-        &.selectable:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        &:not(:disabled) {
+          &.selectable:hover,
+          &.selectable:focus {
+            transform: translateY(-5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            outline: 2px solid #007bff;
+          }
+        }
+
+        &:disabled {
+          cursor: default;
         }
 
         &.flipped {
@@ -47,7 +61,6 @@ import { HintCard } from '../../models/game.interface';
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        text-align: center;
       }
 
       .card-type {

@@ -75,20 +75,6 @@ export class GameComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  isHintCorrect(slot: ValidSlot, hintId: string): boolean {
-    return (
-      this.game?.slots?.[slot]?.aiJudgment?.correctHints?.includes(hintId) ||
-      false
-    );
-  }
-
-  isHintIncorrect(slot: ValidSlot, hintId: string): boolean {
-    return (
-      this.game?.slots?.[slot]?.aiJudgment?.incorrectHints?.includes(hintId) ||
-      false
-    );
-  }
-
   hasSubmittedHints(slot: ValidSlot): boolean {
     return !!this.game?.slots?.[slot]?.submittedHints?.length;
   }

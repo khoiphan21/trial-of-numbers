@@ -12,12 +12,10 @@ import {
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   Game,
-  Player,
   HintCard,
-  NumberGuess,
-  SlotState,
-  AiJudgment,
   HintSubmission,
+  NumberGuess,
+  Player,
 } from '../models/game.interface';
 import { HintService } from './hint.service';
 
@@ -400,21 +398,11 @@ export class GameService {
     const gameSnap = await getDoc(gameRef);
     const game = gameSnap.data() as Game;
 
-    // Generate AI judgments for each slot
-    const aiJudgments: Record<string, AiJudgment> = {};
-    for (const slot of ['A', 'B', 'C', 'D', 'E'] as const) {
-      aiJudgments[`slots.${slot}.aiJudgment`] = await this.generateAiJudgment(
-        game.slots[slot].submittedHints,
-        game.numberSet[slot.charCodeAt(0) - 65]
-      );
-    }
-
     // Start next round
     const roundEndTime = new Date();
     roundEndTime.setMinutes(roundEndTime.getMinutes() + 1);
 
     await updateDoc(gameRef, {
-      ...aiJudgments,
       currentRound: {
         endTime: roundEndTime,
         submissions: {},
@@ -422,42 +410,5 @@ export class GameService {
       roundNumber: game.roundNumber + 1,
       updatedAt: new Date(),
     });
-  }
-
-  private async generateAiJudgment(
-    submissions: HintSubmission[],
-    actualNumber: number
-  ): Promise<AiJudgment> {
-    // TODO: Implement actual AI logic
-    const allHints = submissions.flatMap((s) => s.hints);
-    const correctHints = allHints
-      .filter((h) => this.validateHint(h.hint, actualNumber))
-      .map((h) => h.hint.id);
-    const incorrectHints = allHints
-      .filter((h) => !this.validateHint(h.hint, actualNumber))
-      .map((h) => h.hint.id);
-
-    return {
-      correctHints,
-      incorrectHints,
-      explanation: `Based on the submitted hints, the number appears to be ${actualNumber}`,
-      suggestedNumber: actualNumber,
-    };
-  }
-
-  private validateHint(hint: HintCard, number: number): boolean {
-    switch (hint.type) {
-      case 'EVEN':
-        return number % 2 === 0;
-      case 'ODD':
-        return number % 2 !== 0;
-      case 'GREATER_THAN':
-        return number > (hint.value || 0);
-      case 'LESS_THAN':
-        return number < (hint.value || 10);
-      // Add other hint type validations
-      default:
-        return false;
-    }
   }
 }

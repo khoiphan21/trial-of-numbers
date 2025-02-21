@@ -63,13 +63,5 @@ export interface NumberGuess {
 
 export interface SlotState {
   submittedHints: HintSubmission[];
-  aiJudgment?: AiJudgment;
   isRevealed: boolean;
-}
-
-export interface AiJudgment {
-  correctHints: string[]; // IDs of correct hints
-  incorrectHints: string[]; // IDs of incorrect hints
-  explanation: string;
-  suggestedNumber: number;
 }
