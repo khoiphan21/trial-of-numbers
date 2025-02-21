@@ -1,0 +1,50 @@
+<div class="player-hand">
+  <h3>Your Hint Cards</h3>
+
+  <!-- Round Submission Area -->
+  @if (game.gameState === 'in_progress') {
+  <div class="submission-area">
+    <h4>Submit Hints for Round {{ game.roundNumber }}</h4>
+    <div class="slot-selection">
+      @for (slot of SLOTS; track slot) {
+      <div class="slot">
+        <h5>Slot {{ slot }}</h5>
+        <div
+          class="drop-zone"
+          [class.active]="canSubmitToSlot(slot)"
+          [class.filled]="isSlotFilled(slot)"
+          (click)="selectSlot(slot)"
+        >
+          @if (selectedHints[slot]) {
+          <app-hint-card
+            [hint]="selectedHints[slot]"
+            (cardClick)="removeHint(slot)"
+          ></app-hint-card>
+          } @else {
+          <span class="placeholder">Drop hint here</span>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    <button
+      class="submit-button"
+      [disabled]="!canSubmitHints()"
+      (click)="submitHints()"
+    >
+      Submit Hints
+    </button>
+  </div>
+  }
+
+  <!-- Player's Hand -->
+  <div class="hand">
+    @for (hint of playerHand; track hint.id) {
+    <app-hint-card
+      [hint]="hint"
+      [selectable]="canSelectHint(hint)"
+      (cardClick)="selectHint($event)"
+    ></app-hint-card>
+    }
+  </div>
+</div>

@@ -100,6 +100,9 @@ export class LobbyComponent {
   async createGame() {
     try {
       const gameId = await this.gameService.createGame(this.playerName);
+      if (this.gameService.currentPlayerId) {
+        localStorage.setItem('playerId', this.gameService.currentPlayerId);
+      }
       this.router.navigate(['/game', gameId]);
     } catch (error) {
       console.error('Error creating game:', error);
@@ -109,10 +112,11 @@ export class LobbyComponent {
 
   async joinGame() {
     try {
-      await this.gameService.joinGame(
+      const playerId = await this.gameService.joinGame(
         this.gameId.toUpperCase(),
         this.playerName
       );
+      localStorage.setItem('playerId', playerId);
       this.router.navigate(['/game', this.gameId.toUpperCase()]);
     } catch (error) {
       console.error('Error joining game:', error);

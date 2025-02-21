@@ -7,6 +7,13 @@
     </div>
   </header>
 
+  <!-- Game Controls -->
+  <app-game-controls
+    *ngIf="currentPlayer"
+    [game]="game"
+    [currentPlayer]="currentPlayer"
+  ></app-game-controls>
+
   <main class="game-board">
     <!-- Waiting State -->
     <div class="waiting-screen" *ngIf="game.gameState === 'waiting'">
@@ -23,31 +30,75 @@
         Share this Game ID with your friends to join:
         <strong>{{ game.id }}</strong>
       </p>
+      @if (game.players.length < 2) {
+      <div class="waiting-message">
+        Waiting for at least one more player to join...
+      </div>
+      }
     </div>
 
     <!-- Game In Progress -->
     <div class="game-play" *ngIf="game.gameState === 'in_progress'">
       <!-- Hint Board -->
       <div class="hint-board">
-        <div class="slot" *ngFor="let slot of ['A', 'B', 'C', 'D', 'E']">
+        @for (slot of SLOTS; track slot) {
+        <div class="slot">
           <h3>Slot {{ slot }}</h3>
           <div class="hints">
-            <div
-              class="hint-card"
-              *ngFor="let hint of game.hintBoard"
-              [class.flipped]="hint.isFlipped"
-            >
-              {{ hint.text }}
+            <!-- AI Judgment Section -->
+            @if (game.slots?.[slot]?.aiJudgment) {
+            <div class="ai-judgment">
+              <h4>AI Tutor's Analysis</h4>
+              <p>{{ game.slots[slot].aiJudgment?.explanation }}</p>
+              <div class="hint-results">
+                <!-- Correct Hints -->
+                <div class="correct-hints">
+                  <h5>Correct Hints</h5>
+                  @for (hintId of game.slots[slot].aiJudgment?.correctHints;
+                  track hintId) {
+                  <app-hint-card
+                    [hint]="findHint(game.slots[slot].submittedHints, hintId)"
+                    class="correct"
+                  ></app-hint-card>
+                  }
+                </div>
+                <!-- Incorrect Hints -->
+                <div class="incorrect-hints">
+                  <h5>Incorrect Hints</h5>
+                  @for (hintId of game.slots[slot].aiJudgment?.incorrectHints;
+                  track hintId) {
+                  <app-hint-card
+                    [hint]="findHint(game.slots[slot].submittedHints, hintId)"
+                    class="incorrect"
+                  ></app-hint-card>
+                  }
+                </div>
+              </div>
             </div>
+            }
+
+            <!-- Submitted Hints -->
+            @if (game.slots?.[slot]?.submittedHints?.length) { @for (submission
+            of game.slots[slot].submittedHints; track submission.playerId) {
+            @for (hint of submission.hints; track hint.hint.id) {
+            <app-hint-card
+              [hint]="hint.hint"
+              [class.correct]="isHintCorrect(slot, hint.hint.id)"
+              [class.incorrect]="isHintIncorrect(slot, hint.hint.id)"
+            ></app-hint-card>
+            } } }
           </div>
         </div>
+        }
       </div>
 
-      <!-- Player Actions -->
-      <div class="player-actions">
-        <h3>Your Hints</h3>
-        <!-- TODO: Add hint card selection and submission -->
-      </div>
+      <!-- Player Hand -->
+      @if (currentPlayer) {
+      <app-player-hand
+        [game]="game"
+        [currentPlayer]="currentPlayer"
+      ></app-player-hand>
+      }
     </div>
 
     <!-- Game Completed -->

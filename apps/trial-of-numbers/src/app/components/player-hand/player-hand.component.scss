@@ -1,0 +1,86 @@
+.player-hand {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.submission-area {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+}
+
+.slot-selection {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .slot {
+    text-align: center;
+
+    h5 {
+      margin: 0 0 0.5rem;
+    }
+  }
+}
+
+.drop-zone {
+  height: 120px;
+  border: 2px dashed #ced4da;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    border-color: #28a745;
+    background: #f8fff9;
+
+    &:hover {
+      background: #e8ffe9;
+    }
+  }
+
+  &.filled {
+    border-style: solid;
+    border-color: #007bff;
+  }
+
+  .placeholder {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+}
+
+.hand {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+
+  &:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+  }
+}

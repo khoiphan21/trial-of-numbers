@@ -8,7 +8,18 @@ export interface Player {
 export interface HintCard {
   id: string;
   text: string;
-  type: 'GREATER_THAN' | 'LESS_THAN' | 'EVEN' | 'ODD' | 'PRIME' | 'COMPOSITE';
+  type:
+    | 'GREATER_THAN'
+    | 'LESS_THAN'
+    | 'EVEN'
+    | 'ODD'
+    | 'PRIME'
+    | 'COMPOSITE'
+    | 'ADJACENT'
+    | 'RELATIVE_POSITION'
+    | 'DIVISIBLE'
+    | 'RANGE'
+    | 'SUM_ADJACENT';
   value?: number;
   slot?: 'A' | 'B' | 'C' | 'D' | 'E';
   isFlipped: boolean;
@@ -26,4 +37,39 @@ export interface Game {
   gameState: 'waiting' | 'in_progress' | 'completed';
   createdAt: Date;
   updatedAt: Date;
+  playerHands: Record<string, HintCard[]>;
+  currentRound: {
+    endTime: Date;
+    submissions: Record<string, HintSubmission>;
+  };
+  guesses: NumberGuess[];
+  slots: Record<'A' | 'B' | 'C' | 'D' | 'E', SlotState>;
+}
+
+export interface HintSubmission {
+  playerId: string;
+  hints: {
+    slot: 'A' | 'B' | 'C' | 'D' | 'E';
+    hint: HintCard;
+  }[];
+}
+
+export interface NumberGuess {
+  playerId: string;
+  sequence: number[];
+  timestamp: Date;
+  isCorrect: boolean;
+}
+
+export interface SlotState {
+  submittedHints: HintSubmission[];
+  aiJudgment?: AiJudgment;
+  isRevealed: boolean;
+}
+
+export interface AiJudgment {
+  correctHints: string[]; // IDs of correct hints
+  incorrectHints: string[]; // IDs of incorrect hints
+  explanation: string;
+  suggestedNumber: number;
 }
