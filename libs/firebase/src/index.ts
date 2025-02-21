@@ -1,1 +1,1 @@
-export * from './lib/firebase/firebase.component';
+export * from './lib/';
