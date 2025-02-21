@@ -216,6 +216,8 @@ export class GameService {
       (num, index) => num === game.numberSet[index]
     );
 
+    const updatedGame = { ...game };
+
     if (isCorrect) {
       // Calculate score based on round number (10 - roundNumber)
       const score = 10 - game.roundNumber;
@@ -243,6 +245,22 @@ export class GameService {
         updatedAt: new Date(),
       });
 
+      updatedGame.guesses = [
+        ...game.guesses,
+        {
+          playerId,
+          sequence: numbers,
+          timestamp: new Date().toISOString(),
+          isCorrect: true,
+        },
+      ];
+      updatedGame.players = updatedPlayers;
+
+      // Check if round should end
+      if (this.shouldEndRound(updatedGame)) {
+        await this.endRound(gameId);
+      }
+
       return { correct: true, score };
     } else {
       // Just add the incorrect guess
@@ -255,6 +273,21 @@ export class GameService {
         }),
         updatedAt: new Date(),
       });
+
+      updatedGame.guesses = [
+        ...game.guesses,
+        {
+          playerId,
+          sequence: numbers,
+          timestamp: new Date().toISOString(),
+          isCorrect: false,
+        },
+      ];
+
+      // Check if round should end
+      if (this.shouldEndRound(updatedGame)) {
+        await this.endRound(gameId);
+      }
 
       return { correct: false };
     }
@@ -397,10 +430,24 @@ export class GameService {
   }
 
   private shouldEndRound(game: Game): boolean {
-    const submissions = Object.keys(game.currentRound.submissions).length;
-    const activePlayers = game.players.length;
+    // Count active players (those who haven't guessed yet)
+    const playersWhoHaventGuessed = game.players.filter(
+      (player) => !game.guesses.some((guess) => guess.playerId === player.id)
+    );
+
+    // Count hint submissions for this round from players who haven't guessed
+    const activeSubmissions = Object.keys(game.currentRound.submissions).filter(
+      (playerId) =>
+        playersWhoHaventGuessed.some((player) => player.id === playerId)
+    ).length;
+
+    // Round should end if:
+    // 1. All active players (those who haven't guessed) have submitted hints
+    // 2. No active players left (all have guessed)
+    // 3. Time has run out
     return (
-      submissions === activePlayers ||
+      activeSubmissions === playersWhoHaventGuessed.length ||
+      playersWhoHaventGuessed.length === 0 ||
       new Date() >= new Date(game.currentRound.endTime)
     );
   }

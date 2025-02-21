@@ -57,7 +57,7 @@ export interface HintSubmission {
 export interface NumberGuess {
   playerId: string;
   sequence: number[];
-  timestamp: Date;
+  timestamp: string;
   isCorrect: boolean;
 }
 
