@@ -192,4 +192,28 @@ export class GameComponent implements OnInit, OnDestroy {
     if (index < 4 && num + numbers[index + 1] === targetSum) return true;
     return false;
   }
+
+  get canStartNewGame(): boolean {
+    if (!this.game || this.game.gameState !== 'in_progress') return false;
+
+    // All players have guessed
+    const allPlayersGuessed = this.game.players.every((player) =>
+      this.game!.guesses.some((guess) => guess.playerId === player.id)
+    );
+
+    // Or 10 rounds have passed
+    const roundLimitReached = this.game.roundNumber >= 10;
+
+    return allPlayersGuessed || roundLimitReached;
+  }
+
+  async startNewGame() {
+    if (!this.game?.id) return;
+    try {
+      await this.gameService.startNewGame(this.game.id);
+    } catch (error) {
+      console.error('Error starting new game:', error);
+      // TODO: Add error handling UI
+    }
+  }
 }

@@ -214,3 +214,39 @@
   position: relative;
   padding-right: 300px; // Make room for scoreboard
 }
+
+.new-game-section {
+  text-align: center;
+  padding: 1rem;
+  margin: 1rem 0;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .new-game-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #218838;
+    }
+
+    .material-icons {
+      font-size: 1.2rem;
+    }
+  }
+
+  .info-text {
+    margin: 0.5rem 0 0;
+    color: #6c757d;
+  }
+}

@@ -423,4 +423,44 @@ export class GameService {
       updatedAt: new Date(),
     });
   }
+
+  async startNewGame(gameId: string): Promise<void> {
+    const gameRef = doc(this.firestore, 'games', gameId);
+    const gameSnap = await getDoc(gameRef);
+
+    if (!gameSnap.exists()) {
+      throw new Error('Game not found');
+    }
+
+    const game = gameSnap.data() as Game;
+    const deck = this.hintService.generateGameDeck(this.generateNumberSet());
+    const playerHands: Record<string, HintCard[]> = {};
+
+    game.players.forEach((player) => {
+      playerHands[player.id] = this.hintService.dealPlayerHand(deck);
+    });
+
+    const roundEndTime = new Date();
+    roundEndTime.setMinutes(roundEndTime.getMinutes() + 1);
+
+    await updateDoc(gameRef, {
+      gameState: 'in_progress',
+      numberSet: this.generateNumberSet(),
+      playerHands,
+      currentRound: {
+        endTime: roundEndTime,
+        submissions: {},
+      },
+      slots: {
+        A: { submittedHints: [], isRevealed: false },
+        B: { submittedHints: [], isRevealed: false },
+        C: { submittedHints: [], isRevealed: false },
+        D: { submittedHints: [], isRevealed: false },
+        E: { submittedHints: [], isRevealed: false },
+      },
+      roundNumber: 1,
+      guesses: [],
+      updatedAt: new Date(),
+    });
+  }
 }

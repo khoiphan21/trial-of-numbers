@@ -15,6 +15,20 @@
     </div>
   </header>
 
+  <!-- New Game Button -->
+  @if (canStartNewGame && currentPlayer?.isHost) {
+  <div class="new-game-section">
+    <button class="new-game-button" (click)="startNewGame()">
+      <span class="material-icons">refresh</span>
+      Start New Game
+    </button>
+    <p class="info-text">
+      @if (game.roundNumber >= 10) { Round limit reached. Start a new game? }
+      @else { All players have submitted their guesses. Start a new game? }
+    </p>
+  </div>
+  }
+
   <!-- Game Controls -->
   <app-game-controls
     *ngIf="currentPlayer"
