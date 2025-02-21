@@ -22,7 +22,15 @@ type DropZone = ValidSlot | 'hand';
     <div class="player-hand">
       <h3>Your Hint Cards</h3>
 
-      @if (game.gameState === 'in_progress') { @if (currentRoundSubmission) {
+      @if (game.gameState === 'in_progress') { @if (hasSubmittedGuess) {
+      <div class="waiting-message">
+        <h4>Guess Submitted</h4>
+        <p>
+          You have submitted your guess for this game. Wait for other players to
+          finish.
+        </p>
+      </div>
+      } @else if (currentRoundSubmission) {
       <div class="waiting-message">
         <h4>Hints Submitted for Round {{ game.roundNumber }}</h4>
         <p>Waiting for other players to submit their hints...</p>
@@ -117,6 +125,12 @@ export class PlayerHandComponent {
 
   get currentRoundSubmission() {
     return this.game.currentRound.submissions[this.currentPlayer.id];
+  }
+
+  get hasSubmittedGuess(): boolean {
+    return this.game.guesses.some(
+      (guess) => guess.playerId === this.currentPlayer.id
+    );
   }
 
   canSelectHint(hint: HintCard): boolean {
