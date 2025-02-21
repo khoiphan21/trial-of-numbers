@@ -22,8 +22,18 @@ type DropZone = ValidSlot | 'hand';
     <div class="player-hand">
       <h3>Your Hint Cards</h3>
 
+      @if (game.gameState === 'in_progress') { @if (currentRoundSubmission) {
+      <div class="waiting-message">
+        <h4>Hints Submitted for Round {{ game.roundNumber }}</h4>
+        <p>Waiting for other players to submit their hints...</p>
+        <div class="submitted-hints">
+          @for (hint of currentRoundSubmission.hints; track hint.hint.id) {
+          <app-hint-card [hint]="hint.hint"></app-hint-card>
+          }
+        </div>
+      </div>
+      } @else {
       <!-- Round Submission Area -->
-      @if (game.gameState === 'in_progress') {
       <div class="submission-area">
         <h4>Submit Hints for Round {{ game.roundNumber }}</h4>
         <div class="slot-selection">
@@ -64,7 +74,6 @@ type DropZone = ValidSlot | 'hand';
           Submit Hints
         </button>
       </div>
-      }
 
       <!-- Player's Hand -->
       <div
@@ -85,6 +94,7 @@ type DropZone = ValidSlot | 'hand';
         ></app-hint-card>
         }
       </div>
+      } }
     </div>
   `,
   styleUrls: ['./player-hand.component.scss'],
