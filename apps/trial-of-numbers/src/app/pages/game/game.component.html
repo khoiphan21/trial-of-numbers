@@ -1,0 +1,66 @@
+<div class="game-container" *ngIf="game">
+  <header class="game-header">
+    <h1>Trial of Numbers</h1>
+    <div class="game-info">
+      <p>Game ID: {{ game.id }}</p>
+      <p>Round: {{ game.roundNumber + 1 }}/10</p>
+    </div>
+  </header>
+
+  <main class="game-board">
+    <!-- Waiting State -->
+    <div class="waiting-screen" *ngIf="game.gameState === 'waiting'">
+      <h2>Waiting for Players</h2>
+      <div class="player-list">
+        <h3>Players ({{ game.players.length }}/10):</h3>
+        <ul>
+          <li *ngFor="let player of game.players">
+            {{ player.name }} {{ player.isHost ? '(Host)' : '' }}
+          </li>
+        </ul>
+      </div>
+      <p>
+        Share this Game ID with your friends to join:
+        <strong>{{ game.id }}</strong>
+      </p>
+    </div>
+
+    <!-- Game In Progress -->
+    <div class="game-play" *ngIf="game.gameState === 'in_progress'">
+      <!-- Hint Board -->
+      <div class="hint-board">
+        <div class="slot" *ngFor="let slot of ['A', 'B', 'C', 'D', 'E']">
+          <h3>Slot {{ slot }}</h3>
+          <div class="hints">
+            <div
+              class="hint-card"
+              *ngFor="let hint of game.hintBoard"
+              [class.flipped]="hint.isFlipped"
+            >
+              {{ hint.text }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Actions -->
+      <div class="player-actions">
+        <h3>Your Hints</h3>
+        <!-- TODO: Add hint card selection and submission -->
+      </div>
+    </div>
+
+    <!-- Game Completed -->
+    <div class="game-over" *ngIf="game.gameState === 'completed'">
+      <h2>Game Over!</h2>
+      <div class="final-scores">
+        <h3>Final Scores:</h3>
+        <ul>
+          <li *ngFor="let player of game.players">
+            {{ player.name }}: {{ player.score }} points
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
