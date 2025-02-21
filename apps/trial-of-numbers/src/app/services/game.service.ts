@@ -66,7 +66,6 @@ export class GameService {
         B: { submittedHints: [], isRevealed: false },
         C: { submittedHints: [], isRevealed: false },
         D: { submittedHints: [], isRevealed: false },
-        E: { submittedHints: [], isRevealed: false },
       },
     };
 
@@ -303,7 +302,7 @@ export class GameService {
         text: `Greater than ${num - 1}`,
         type: 'GREATER_THAN',
         value: num,
-        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D' | 'E',
+        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D',
         isFlipped: false,
       });
     });
@@ -315,7 +314,7 @@ export class GameService {
         text: `Less than ${num + 1}`,
         type: 'LESS_THAN',
         value: num,
-        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D' | 'E',
+        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D',
         isFlipped: false,
       });
     });
@@ -327,7 +326,7 @@ export class GameService {
         text: num % 2 === 0 ? 'Even number' : 'Odd number',
         type: num % 2 === 0 ? 'EVEN' : 'ODD',
         value: num,
-        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D' | 'E',
+        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D',
         isFlipped: false,
       });
     });
@@ -340,7 +339,7 @@ export class GameService {
         text: isPrime ? 'Prime number' : 'Composite number',
         type: isPrime ? 'PRIME' : 'COMPOSITE',
         value: num,
-        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D' | 'E',
+        slot: String.fromCharCode(65 + index) as 'A' | 'B' | 'C' | 'D',
         isFlipped: false,
       });
     });
@@ -363,7 +362,7 @@ export class GameService {
   async submitRoundHints(
     gameId: string,
     playerId: string,
-    hints: { slot: 'A' | 'B' | 'C' | 'D' | 'E'; hint: HintCard }[]
+    hints: { slot: 'A' | 'B' | 'C' | 'D'; hint: HintCard }[]
   ): Promise<void> {
     const gameRef = doc(this.firestore, 'games', gameId);
     const gameSnap = await getDoc(gameRef);
@@ -503,7 +502,6 @@ export class GameService {
         B: { submittedHints: [], isRevealed: false },
         C: { submittedHints: [], isRevealed: false },
         D: { submittedHints: [], isRevealed: false },
-        E: { submittedHints: [], isRevealed: false },
       },
       roundNumber: 1,
       guesses: [],

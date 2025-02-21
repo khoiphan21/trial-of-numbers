@@ -15,7 +15,7 @@ import { GameService } from '../../services/game.service';
 import { ScoreboardComponent } from '../../components/scoreboard/scoreboard.component';
 import { FormsModule } from '@angular/forms';
 
-type ValidSlot = 'A' | 'B' | 'C' | 'D' | 'E';
+type ValidSlot = 'A' | 'B' | 'C' | 'D';
 
 @Component({
   selector: 'app-game',
@@ -37,7 +37,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private destroy$ = new Subject<void>();
 
-  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D', 'E'];
+  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D'];
 
   game: Game | null = null;
   gameId: string | null = null;
@@ -112,7 +112,7 @@ export class GameComponent implements OnInit, OnDestroy {
       case 'ADJACENT':
         const slotIndex = this.SLOTS.indexOf(slot);
         const leftNum = slotIndex > 0 ? numbers[slotIndex - 1] : undefined;
-        const rightNum = slotIndex < 4 ? numbers[slotIndex + 1] : undefined;
+        const rightNum = slotIndex < 3 ? numbers[slotIndex + 1] : undefined;
         return this.validateAdjacentHint(hint.text, leftNum, rightNum);
       case 'RELATIVE_POSITION':
         return this.validateRelativePosition(hint.text, slot, numbers);
@@ -174,7 +174,7 @@ export class GameComponent implements OnInit, OnDestroy {
     if (text.includes('larger than the number on the left')) {
       return index > 0 && num > numbers[index - 1];
     } else if (text.includes('smaller than the number on the right')) {
-      return index < 4 && num < numbers[index + 1];
+      return index < 3 && num < numbers[index + 1];
     }
     return false;
   }
@@ -189,7 +189,7 @@ export class GameComponent implements OnInit, OnDestroy {
     const targetSum = text.includes('5') ? 5 : 6;
 
     if (index > 0 && num + numbers[index - 1] === targetSum) return true;
-    if (index < 4 && num + numbers[index + 1] === targetSum) return true;
+    if (index < 3 && num + numbers[index + 1] === targetSum) return true;
     return false;
   }
 

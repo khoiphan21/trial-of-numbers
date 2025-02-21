@@ -11,7 +11,7 @@ import {
 } from '@angular/cdk/drag-drop';
 
 // Move type declaration outside the class
-type ValidSlot = 'A' | 'B' | 'C' | 'D' | 'E';
+type ValidSlot = 'A' | 'B' | 'C' | 'D';
 type DropZone = ValidSlot | 'hand';
 
 @Component({
@@ -116,7 +116,7 @@ export class PlayerHandComponent {
   private gameService = inject(GameService);
   selectedHints: Partial<Record<ValidSlot, HintCard>> = {};
 
-  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D', 'E'];
+  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D'];
   readonly slotIds = this.SLOTS.map((slot) => `slot-${slot}`);
 
   get playerHand(): HintCard[] {

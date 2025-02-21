@@ -21,7 +21,7 @@ export interface HintCard {
     | 'RANGE'
     | 'SUM_ADJACENT';
   value?: number;
-  slot?: 'A' | 'B' | 'C' | 'D' | 'E';
+  slot?: 'A' | 'B' | 'C' | 'D';
   isFlipped: boolean;
 }
 
@@ -43,13 +43,13 @@ export interface Game {
     submissions: Record<string, HintSubmission>;
   };
   guesses: NumberGuess[];
-  slots: Record<'A' | 'B' | 'C' | 'D' | 'E', SlotState>;
+  slots: Record<'A' | 'B' | 'C' | 'D', SlotState>;
 }
 
 export interface HintSubmission {
   playerId: string;
   hints: {
-    slot: 'A' | 'B' | 'C' | 'D' | 'E';
+    slot: 'A' | 'B' | 'C' | 'D';
     hint: HintCard;
   }[];
 }
@@ -65,3 +65,5 @@ export interface SlotState {
   submittedHints: HintSubmission[];
   isRevealed: boolean;
 }
+
+export type ValidSlot = 'A' | 'B' | 'C' | 'D';

@@ -152,12 +152,7 @@ export class HintService {
               text: hintType.text,
               type: hintType.type,
               value: num,
-              slot: String.fromCharCode(65 + position) as
-                | 'A'
-                | 'B'
-                | 'C'
-                | 'D'
-                | 'E',
+              slot: String.fromCharCode(65 + position) as 'A' | 'B' | 'C' | 'D',
               isFlipped: false,
             });
           }
