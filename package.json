@@ -2,7 +2,9 @@
   "name": "@luna-academy-trial-of-numbers/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "nx build trial-of-numbers"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~19.1.0",
