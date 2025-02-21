@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { GameControlsComponent } from '../../components/game-controls/game-controls.component';
 import { PlayerHandComponent } from '../../components/player-hand/player-hand.component';
@@ -20,6 +20,7 @@ type ValidSlot = 'A' | 'B' | 'C' | 'D' | 'E';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     GameControlsComponent,
     PlayerHandComponent,
     HintCardComponent,

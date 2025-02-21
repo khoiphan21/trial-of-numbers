@@ -80,9 +80,8 @@ import { HintCard } from '../../models/game.interface';
         gap: 0.5rem;
       }
 
-      .card-type {
-        font-size: 0.8rem;
-        color: #666;
+      .card-text {
+        color: #000;
       }
     `,
   ],

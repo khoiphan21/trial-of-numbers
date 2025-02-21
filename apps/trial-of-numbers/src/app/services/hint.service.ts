@@ -29,14 +29,26 @@ export class HintService {
     {
       text: 'Greater than 4',
       type: 'GREATER_THAN',
-      count: 15,
+      count: 10,
       validator: (num) => num > 4,
     },
     {
       text: 'Less than 6',
       type: 'LESS_THAN',
-      count: 15,
+      count: 10,
       validator: (num) => num < 6,
+    },
+    {
+      text: 'Greater than 6',
+      type: 'GREATER_THAN',
+      count: 10,
+      validator: (num) => num > 6,
+    },
+    {
+      text: 'Less than 4',
+      type: 'LESS_THAN',
+      count: 10,
+      validator: (num) => num < 4,
     },
 
     // Common Hints (10 each)
@@ -67,12 +79,6 @@ export class HintService {
       type: 'COMPOSITE',
       count: 10,
       validator: (num) => !this.isPrime(num) && num > 1,
-    },
-    {
-      text: 'Divisible by 2',
-      type: 'DIVISIBLE',
-      count: 10,
-      validator: (num) => num % 2 === 0,
     },
     {
       text: 'Divisible by 3',
@@ -107,20 +113,20 @@ export class HintService {
       validator: (num) => num > 3 && num < 8,
     },
     {
-      text: 'Adds up to 5 with an adjacent number',
+      text: 'Adds up to 3 with an adjacent number',
       type: 'SUM_ADJACENT',
       count: 5,
       validator: (num, pos, numbers) =>
-        (pos > 0 && num + numbers[pos - 1] === 5) ||
-        (pos < 4 && num + numbers[pos + 1] === 5),
+        (pos > 0 && num + numbers[pos - 1] === 3) ||
+        (pos < 4 && num + numbers[pos + 1] === 3),
     },
     {
-      text: 'Adds up to 6 with an adjacent number',
+      text: 'Adds up to 4 with an adjacent number',
       type: 'SUM_ADJACENT',
       count: 5,
       validator: (num, pos, numbers) =>
-        (pos > 0 && num + numbers[pos - 1] === 6) ||
-        (pos < 4 && num + numbers[pos + 1] === 6),
+        (pos > 0 && num + numbers[pos - 1] === 4) ||
+        (pos < 4 && num + numbers[pos + 1] === 4),
     },
     {
       text: 'Next to a prime number',

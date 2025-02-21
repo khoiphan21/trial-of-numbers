@@ -1,7 +1,15 @@
 <div class="game-container" *ngIf="game">
   <header class="game-header">
-    <h1>Trial of Numbers</h1>
-    <div class="game-info">
+    <div class="header-left">
+      <button class="home-button" routerLink="/">
+        <span class="material-icons">home</span>
+        Home
+      </button>
+    </div>
+    <div class="header-center">
+      <h1>Trial of Numbers</h1>
+    </div>
+    <div class="header-right">
       <p>Game ID: {{ game.id }}</p>
       <p>Round: {{ game.roundNumber + 1 }}/10</p>
     </div>
