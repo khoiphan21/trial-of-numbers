@@ -51,12 +51,18 @@ import { Game, Player } from '../../models/game.interface';
 
       .scores {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+
+        @media (min-width: 768px) {
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 1rem;
+        }
       }
 
       .player-score {
         padding: 0.75rem;
+        font-size: 0.9rem;
         border-radius: 4px;
         background: #f8f9fa;
         border: 1px solid #dee2e6;
@@ -64,6 +70,11 @@ import { Game, Player } from '../../models/game.interface';
         &.current-player {
           background: #e7f1ff;
           border-color: #b8daff;
+        }
+
+        @media (min-width: 768px) {
+          padding: 1rem;
+          font-size: 1rem;
         }
       }
 

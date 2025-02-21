@@ -121,15 +121,22 @@ import { GameService } from '../../services/game.service';
       }
 
       .number-inputs {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
         gap: 0.5rem;
         margin-bottom: 1rem;
+
+        @media (max-width: 480px) {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.75rem;
+        }
       }
 
       .input-group {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        align-items: center;
+        gap: 0.25rem;
 
         label {
           font-weight: 500;
@@ -137,11 +144,18 @@ import { GameService } from '../../services/game.service';
         }
 
         input {
-          width: 4rem;
+          width: 100%;
+          max-width: 4rem;
           padding: 0.5rem;
           text-align: center;
           border: 1px solid #ced4da;
           border-radius: 4px;
+          font-size: 1.1rem;
+
+          @media (max-width: 480px) {
+            padding: 0.75rem;
+            font-size: 1.2rem;
+          }
         }
       }
 
@@ -149,6 +163,10 @@ import { GameService } from '../../services/game.service';
         display: flex;
         gap: 1rem;
         margin-top: 1rem;
+
+        @media (max-width: 480px) {
+          flex-direction: column;
+        }
       }
 
       .submit-guess,
