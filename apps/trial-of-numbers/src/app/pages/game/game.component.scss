@@ -93,7 +93,7 @@
       .hints {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1rem;
       }
     }
   }
@@ -143,6 +143,34 @@
       &:last-child {
         border-bottom: none;
       }
+    }
+  }
+}
+
+.hints {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .hint-section {
+    h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  }
+
+  .correct-hints {
+    :host ::ng-deep .hint-card {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+  }
+
+  .incorrect-hints {
+    :host ::ng-deep .hint-card {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
     }
   }
 }

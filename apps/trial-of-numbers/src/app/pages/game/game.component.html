@@ -45,12 +45,30 @@
         <div class="slot">
           <h3>Slot {{ slot }}</h3>
           <div class="hints">
-            <!-- Submitted Hints -->
-            @if (game.slots?.[slot]?.submittedHints?.length) { @for (submission
-            of game.slots[slot].submittedHints; track submission.playerId) {
-            @for (hint of submission.hints; track hint.hint.id) {
-            <app-hint-card [hint]="hint.hint"></app-hint-card>
-            } } }
+            <!-- Correct Hints -->
+            <div class="hint-section correct-hints">
+              <h4>Correct Hints</h4>
+              @if (game.slots?.[slot]?.submittedHints?.length) { @for
+              (submission of game.slots[slot].submittedHints; track
+              submission.playerId) { @for (hint of submission.hints; track
+              hint.hint.id) { @if (isHintValid(slot, hint.hint)) {
+              <app-hint-card [hint]="hint.hint" class="correct"></app-hint-card>
+              } } } }
+            </div>
+
+            <!-- Incorrect Hints -->
+            <div class="hint-section incorrect-hints">
+              <h4>Incorrect Hints</h4>
+              @if (game.slots?.[slot]?.submittedHints?.length) { @for
+              (submission of game.slots[slot].submittedHints; track
+              submission.playerId) { @for (hint of submission.hints; track
+              hint.hint.id) { @if (!isHintValid(slot, hint.hint)) {
+              <app-hint-card
+                [hint]="hint.hint"
+                class="incorrect"
+              ></app-hint-card>
+              } } } }
+            </div>
           </div>
         </div>
         }
