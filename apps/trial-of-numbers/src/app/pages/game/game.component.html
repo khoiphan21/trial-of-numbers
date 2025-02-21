@@ -52,7 +52,10 @@
               (submission of game.slots[slot].submittedHints; track
               submission.playerId) { @for (hint of submission.hints; track
               hint.hint.id) { @if (isHintValid(slot, hint.hint)) {
-              <app-hint-card [hint]="hint.hint" class="correct"></app-hint-card>
+              <app-hint-card
+                [hint]="hint.hint"
+                [correct]="true"
+              ></app-hint-card>
               } } } }
             </div>
 
@@ -65,7 +68,7 @@
               hint.hint.id) { @if (!isHintValid(slot, hint.hint)) {
               <app-hint-card
                 [hint]="hint.hint"
-                class="incorrect"
+                [incorrect]="true"
               ></app-hint-card>
               } } } }
             </div>

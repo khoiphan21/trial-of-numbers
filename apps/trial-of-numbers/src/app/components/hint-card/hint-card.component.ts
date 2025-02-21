@@ -12,6 +12,8 @@ import { HintCard } from '../../models/game.interface';
       class="hint-card"
       [class.flipped]="hint.isFlipped"
       [class.selectable]="selectable"
+      [class.correct]="correct"
+      [class.incorrect]="incorrect"
       [disabled]="!selectable"
       (click)="onCardClick()"
       (keydown.enter)="onCardClick()"
@@ -20,7 +22,6 @@ import { HintCard } from '../../models/game.interface';
     >
       <div class="card-content">
         <span class="card-text">{{ hint.text }}</span>
-        <span class="card-type">{{ hint.type }}</span>
       </div>
     </button>
     }
@@ -36,6 +37,16 @@ import { HintCard } from '../../models/game.interface';
         cursor: pointer;
         transition: all 0.3s ease;
         text-align: left;
+
+        &.correct {
+          background-color: #d4edda;
+          border-color: #c3e6cb;
+        }
+
+        &.incorrect {
+          background-color: #f8d7da;
+          border-color: #f5c6cb;
+        }
 
         &:not(:disabled) {
           &.selectable:hover,
@@ -73,6 +84,8 @@ import { HintCard } from '../../models/game.interface';
 export class HintCardComponent {
   @Input() hint?: HintCard | null;
   @Input() selectable = false;
+  @Input() correct = false;
+  @Input() incorrect = false;
   @Output() cardClick = new EventEmitter<HintCard>();
 
   onCardClick() {
