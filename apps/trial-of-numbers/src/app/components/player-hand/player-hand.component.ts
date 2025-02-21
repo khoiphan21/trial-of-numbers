@@ -3,25 +3,103 @@ import { CommonModule } from '@angular/common';
 import { HintCard, Game, Player } from '../../models/game.interface';
 import { HintCardComponent } from '../hint-card/hint-card.component';
 import { GameService } from '../../services/game.service';
+import {
+  DragDropModule,
+  CdkDragDrop,
+  CdkDrag,
+  CdkDropList,
+} from '@angular/cdk/drag-drop';
 
 // Move type declaration outside the class
 type ValidSlot = 'A' | 'B' | 'C' | 'D' | 'E';
+type DropZone = ValidSlot | 'hand';
 
 @Component({
   selector: 'app-player-hand',
   standalone: true,
-  imports: [CommonModule, HintCardComponent],
-  templateUrl: './player-hand.component.html',
+  imports: [CommonModule, HintCardComponent, DragDropModule],
+  template: `
+    <div class="player-hand">
+      <h3>Your Hint Cards</h3>
+
+      <!-- Round Submission Area -->
+      @if (game.gameState === 'in_progress') {
+      <div class="submission-area">
+        <h4>Submit Hints for Round {{ game.roundNumber }}</h4>
+        <div class="slot-selection">
+          @for (slot of SLOTS; track slot) {
+          <div class="slot">
+            <h5>Slot {{ slot }}</h5>
+            <div
+              class="drop-zone"
+              [class.active]="canSubmitToSlot(slot)"
+              [class.filled]="isSlotFilled(slot)"
+              cdkDropList
+              [id]="'slot-' + slot"
+              [cdkDropListData]="slot"
+              (cdkDropListDropped)="onDrop($event)"
+              [cdkDropListEnterPredicate]="canDropPredicate"
+              [cdkDropListConnectedTo]="['player-hand']"
+            >
+              @if (selectedHints[slot]) {
+              <app-hint-card
+                [hint]="selectedHints[slot]"
+                (cardClick)="removeHint(slot)"
+                [selectable]="true"
+                cdkDrag
+                [cdkDragData]="selectedHints[slot]"
+              ></app-hint-card>
+              } @else {
+              <span class="placeholder">Drop hint here</span>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        <button
+          class="submit-button"
+          [disabled]="!canSubmitHints()"
+          (click)="submitHints()"
+        >
+          Submit Hints
+        </button>
+      </div>
+      }
+
+      <!-- Player's Hand -->
+      <div
+        class="hand"
+        cdkDropList
+        id="player-hand"
+        [cdkDropListData]="'hand'"
+        (cdkDropListDropped)="onDrop($event)"
+        [cdkDropListConnectedTo]="slotIds"
+      >
+        @for (hint of playerHand; track hint.id) {
+        <app-hint-card
+          [hint]="hint"
+          [selectable]="canSelectHint(hint)"
+          (cardClick)="selectHint($event)"
+          cdkDrag
+          [cdkDragData]="hint"
+        ></app-hint-card>
+        }
+      </div>
+    </div>
+  `,
   styleUrls: ['./player-hand.component.scss'],
 })
 export class PlayerHandComponent {
   @Input() game!: Game;
   @Input() currentPlayer!: Player;
 
+  isDragging = false;
+
   private gameService = inject(GameService);
   selectedHints: Partial<Record<ValidSlot, HintCard>> = {};
 
   readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D', 'E'];
+  readonly slotIds = this.SLOTS.map((slot) => `slot-${slot}`);
 
   get playerHand(): HintCard[] {
     return this.game.playerHands[this.currentPlayer.id] || [];
@@ -46,10 +124,14 @@ export class PlayerHandComponent {
   }
 
   selectHint(hint: HintCard) {
-    const availableSlot = this.SLOTS.find((slot) => !this.selectedHints[slot]);
-
-    if (availableSlot) {
-      this.selectedHints[availableSlot] = hint;
+    // Only handle click selection if not dragging
+    if (!this.isDragging) {
+      const availableSlot = this.SLOTS.find(
+        (slot) => !this.selectedHints[slot]
+      );
+      if (availableSlot) {
+        this.selectedHints[availableSlot] = hint;
+      }
     }
   }
 
@@ -84,5 +166,41 @@ export class PlayerHandComponent {
     );
 
     this.selectedHints = {};
+  }
+
+  canDropPredicate = (drag: CdkDrag<HintCard>, drop: CdkDropList<DropZone>) => {
+    const slot = drop.data;
+    if (slot === 'hand') return true;
+    return this.canSubmitToSlot(slot as ValidSlot);
+  };
+
+  onDrop(event: CdkDragDrop<any>) {
+    if (event.previousContainer === event.container) {
+      return;
+    }
+
+    const hint = event.item.data as HintCard;
+    const targetZone = event.container.data as DropZone;
+    const sourceZone = event.previousContainer.data as DropZone;
+
+    if (targetZone === 'hand') {
+      // Dropping back to hand - find and remove from selected hints
+      for (const slot of this.SLOTS) {
+        if (this.selectedHints[slot]?.id === hint.id) {
+          this.removeHint(slot);
+          break;
+        }
+      }
+    } else {
+      // Dropping to a slot
+      const slot = targetZone as ValidSlot;
+      if (this.canSubmitToSlot(slot)) {
+        // If the hint was in another slot, remove it first
+        if (sourceZone !== 'hand') {
+          this.removeHint(sourceZone as ValidSlot);
+        }
+        this.selectedHints[slot] = hint;
+      }
+    }
   }
 }

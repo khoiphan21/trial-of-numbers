@@ -14,6 +14,7 @@ import { HintCard } from '../../models/game.interface';
       [class.selectable]="selectable"
       [class.correct]="correct"
       [class.incorrect]="incorrect"
+      [class.selected]="selected"
       [disabled]="!selectable"
       (click)="onCardClick()"
       (keydown.enter)="onCardClick()"
@@ -66,6 +67,11 @@ import { HintCard } from '../../models/game.interface';
           border-color: #f5c6cb;
           transform: rotateY(180deg);
         }
+
+        &.selected {
+          border-color: #007bff;
+          background-color: #e7f1ff;
+        }
       }
 
       .card-content {
@@ -86,6 +92,7 @@ export class HintCardComponent {
   @Input() selectable = false;
   @Input() correct = false;
   @Input() incorrect = false;
+  @Input() selected = false;
   @Output() cardClick = new EventEmitter<HintCard>();
 
   onCardClick() {
