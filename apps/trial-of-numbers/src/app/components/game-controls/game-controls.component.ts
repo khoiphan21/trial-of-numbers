@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Game, Player } from '../../models/game.interface';
@@ -27,6 +27,7 @@ import { GameService } from '../../services/game.service';
       @if (game.gameState === 'in_progress') {
       <div class="guess-controls">
         <h3>Make a Guess</h3>
+        @if (!hasSubmittedGuess) {
         <div class="number-inputs">
           @for (slot of SLOTS; track slot) {
           <div class="input-group">
@@ -37,7 +38,6 @@ import { GameService } from '../../services/game.service';
               min="0"
               max="9"
               [(ngModel)]="guessNumbers[slot]"
-              [disabled]="hasCorrectGuess"
             />
           </div>
           }
@@ -45,16 +45,16 @@ import { GameService } from '../../services/game.service';
         <button
           class="submit-guess"
           (click)="submitGuess()"
-          [disabled]="!isValidGuess() || hasCorrectGuess"
+          [disabled]="!isValidGuess()"
         >
           Submit Guess
         </button>
-        @if (lastGuessResult) {
-        <div class="guess-result" [class.correct]="lastGuessResult.correct">
+        } @else {
+        <div class="guess-result" [class.correct]="lastGuessResult?.correct">
           <p>
-            @if (lastGuessResult.correct) { Correct! You earned
-            {{ lastGuessResult.score }} points. } @else { Incorrect. Try again!
-            }
+            @if (lastGuessResult?.correct) { Correct! You earned
+            {{ lastGuessResult?.score }} points. } @else { Incorrect. Better
+            luck next time! }
           </p>
         </div>
         }
@@ -176,7 +176,7 @@ import { GameService } from '../../services/game.service';
     `,
   ],
 })
-export class GameControlsComponent {
+export class GameControlsComponent implements OnInit {
   @Input() game!: Game;
   @Input() currentPlayer!: Player;
 
@@ -186,6 +186,7 @@ export class GameControlsComponent {
   guessNumbers: Record<string, number> = {};
   roundTimeLeft: number | null = null;
   lastGuessResult?: { correct: boolean; score?: number };
+  hasGuessed = false;
 
   get isHost(): boolean {
     return this.currentPlayer?.id === this.game?.host;
@@ -196,6 +197,12 @@ export class GameControlsComponent {
       (guess) =>
         guess.playerId === this.currentPlayer.id &&
         guess.sequence.every((num, index) => num === this.game.numberSet[index])
+    );
+  }
+
+  get hasSubmittedGuess(): boolean {
+    return this.game.guesses.some(
+      (guess) => guess.playerId === this.currentPlayer.id
     );
   }
 
@@ -213,21 +220,17 @@ export class GameControlsComponent {
   }
 
   async submitGuess() {
-    if (!this.isValidGuess()) return;
+    if (!this.isValidGuess() || this.hasSubmittedGuess) return;
 
-    const numbers = this.SLOTS.map((slot) => this.guessNumbers[slot]);
     try {
+      const numbers = this.SLOTS.map((slot) => this.guessNumbers[slot]);
       const result = await this.gameService.submitGuess(
         this.game.id,
         this.currentPlayer.id,
         numbers
       );
       this.lastGuessResult = result;
-
-      if (result.correct) {
-        // Clear inputs after correct guess
-        this.guessNumbers = {};
-      }
+      this.hasGuessed = true;
     } catch (error) {
       console.error('Error submitting guess:', error);
       // TODO: Add error handling UI
@@ -235,7 +238,22 @@ export class GameControlsComponent {
   }
 
   ngOnInit() {
+    this.initializeLastGuessResult();
     this.startRoundTimer();
+  }
+
+  private initializeLastGuessResult() {
+    const playerGuess = this.game.guesses.find(
+      (guess) => guess.playerId === this.currentPlayer.id
+    );
+
+    if (playerGuess) {
+      this.lastGuessResult = {
+        correct: playerGuess.isCorrect,
+        score: playerGuess.isCorrect ? 10 - this.game.roundNumber : undefined,
+      };
+      this.hasGuessed = true;
+    }
   }
 
   private startRoundTimer() {

@@ -2,20 +2,19 @@ import { Injectable } from '@angular/core';
 import { FIREBASE_APP } from '@luna-academy-trial-of-numbers/firebase';
 import {
   FirestoreError,
+  arrayUnion,
   doc,
   getDoc,
   getFirestore,
   onSnapshot,
   setDoc,
   updateDoc,
-  arrayUnion,
 } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   Game,
   HintCard,
   HintSubmission,
-  NumberGuess,
   Player,
 } from '../models/game.interface';
 import { HintService } from './hint.service';
@@ -206,6 +205,11 @@ export class GameService {
   async submitGuess(gameId: string, playerId: string, numbers: number[]) {
     const gameRef = doc(this.firestore, 'games', gameId);
     const game = (await getDoc(gameRef)).data() as Game;
+
+    // Check if player has already guessed
+    if (game.guesses.some((guess) => guess.playerId === playerId)) {
+      throw new Error('You have already submitted a guess');
+    }
 
     // Check if guess is correct
     const isCorrect = numbers.every(
