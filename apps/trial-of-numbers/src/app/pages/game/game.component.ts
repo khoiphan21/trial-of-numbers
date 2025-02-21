@@ -12,6 +12,8 @@ import {
   Player,
 } from '../../models/game.interface';
 import { GameService } from '../../services/game.service';
+import { ScoreboardComponent } from '../../components/scoreboard/scoreboard.component';
+import { FormsModule } from '@angular/forms';
 
 type ValidSlot = 'A' | 'B' | 'C' | 'D' | 'E';
 
@@ -21,9 +23,11 @@ type ValidSlot = 'A' | 'B' | 'C' | 'D' | 'E';
   imports: [
     CommonModule,
     RouterLink,
+    FormsModule,
     GameControlsComponent,
     PlayerHandComponent,
     HintCardComponent,
+    ScoreboardComponent,
   ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss'],

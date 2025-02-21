@@ -25,27 +25,39 @@ import { GameService } from '../../services/game.service';
 
       <!-- Number Guess Form -->
       @if (game.gameState === 'in_progress') {
-      <div class="number-guess">
+      <div class="guess-controls">
         <h3>Make a Guess</h3>
-        <div class="guess-inputs">
-          @for (slot of ['A', 'B', 'C', 'D', 'E']; track slot) {
-          <input
-            type="number"
-            min="0"
-            max="9"
-            [(ngModel)]="guessSequence[slot]"
-            placeholder="Slot {{ slot }}"
-          />
+        <div class="number-inputs">
+          @for (slot of SLOTS; track slot) {
+          <div class="input-group">
+            <label [for]="'slot-' + slot">{{ slot }}</label>
+            <input
+              [id]="'slot-' + slot"
+              type="number"
+              min="0"
+              max="9"
+              [(ngModel)]="guessNumbers[slot]"
+              [disabled]="hasCorrectGuess"
+            />
+          </div>
           }
         </div>
         <button
-          [disabled]="!isValidGuess()"
+          class="submit-guess"
           (click)="submitGuess()"
-          class="guess-button"
+          [disabled]="!isValidGuess() || hasCorrectGuess"
         >
           Submit Guess
         </button>
-        <p class="warning">Warning: An incorrect guess will eliminate you!</p>
+        @if (lastGuessResult) {
+        <div class="guess-result" [class.correct]="lastGuessResult.correct">
+          <p>
+            @if (lastGuessResult.correct) { Correct! You earned
+            {{ lastGuessResult.score }} points. } @else { Incorrect. Try again!
+            }
+          </p>
+        </div>
+        }
       </div>
       }
 
@@ -86,27 +98,71 @@ import { GameService } from '../../services/game.service';
         }
       }
 
-      .number-guess {
+      .guess-controls {
         margin-top: 1rem;
+      }
 
-        .guess-inputs {
-          display: flex;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
+      .number-inputs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
 
-          input {
-            width: 4rem;
-            padding: 0.5rem;
-            text-align: center;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-          }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-weight: 500;
+          color: #2c3e50;
         }
 
-        .warning {
-          color: #dc3545;
-          font-size: 0.9rem;
-          margin-top: 0.5rem;
+        input {
+          width: 4rem;
+          padding: 0.5rem;
+          text-align: center;
+          border: 1px solid #ced4da;
+          border-radius: 4px;
+        }
+      }
+
+      .submit-guess {
+        width: 100%;
+        padding: 0.75rem;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: #0056b3;
+        }
+
+        &:disabled {
+          background: #6c757d;
+          cursor: not-allowed;
+        }
+      }
+
+      .guess-result {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 4px;
+        text-align: center;
+        background: #f8d7da;
+        color: #721c24;
+
+        &.correct {
+          background: #d4edda;
+          color: #155724;
+        }
+
+        p {
+          margin: 0;
         }
       }
 
@@ -125,11 +181,29 @@ export class GameControlsComponent {
   @Input() currentPlayer!: Player;
 
   private gameService = inject(GameService);
-  guessSequence: Record<string, number> = {};
+  readonly SLOTS = ['A', 'B', 'C', 'D', 'E'];
+
+  guessNumbers: Record<string, number> = {};
   roundTimeLeft: number | null = null;
+  lastGuessResult?: { correct: boolean; score?: number };
 
   get isHost(): boolean {
     return this.currentPlayer?.id === this.game?.host;
+  }
+
+  get hasCorrectGuess(): boolean {
+    return this.game.guesses.some(
+      (guess) =>
+        guess.playerId === this.currentPlayer.id &&
+        guess.sequence.every((num, index) => num === this.game.numberSet[index])
+    );
+  }
+
+  isValidGuess(): boolean {
+    return this.SLOTS.every((slot) => {
+      const num = this.guessNumbers[slot];
+      return typeof num === 'number' && num >= 0 && num <= 9;
+    });
   }
 
   async startGame(): Promise<void> {
@@ -138,25 +212,25 @@ export class GameControlsComponent {
     }
   }
 
-  isValidGuess(): boolean {
-    return (
-      Object.keys(this.guessSequence).length === 5 &&
-      Object.values(this.guessSequence).every(
-        (num) => num >= 0 && num <= 9 && Number.isInteger(num)
-      )
-    );
-  }
+  async submitGuess() {
+    if (!this.isValidGuess()) return;
 
-  async submitGuess(): Promise<void> {
-    if (this.isValidGuess()) {
-      const sequence = ['A', 'B', 'C', 'D', 'E'].map(
-        (slot) => this.guessSequence[slot]
-      );
-      await this.gameService.submitGuess(
+    const numbers = this.SLOTS.map((slot) => this.guessNumbers[slot]);
+    try {
+      const result = await this.gameService.submitGuess(
         this.game.id,
         this.currentPlayer.id,
-        sequence
+        numbers
       );
+      this.lastGuessResult = result;
+
+      if (result.correct) {
+        // Clear inputs after correct guess
+        this.guessNumbers = {};
+      }
+    } catch (error) {
+      console.error('Error submitting guess:', error);
+      // TODO: Add error handling UI
     }
   }
 

@@ -8,6 +8,7 @@ import {
   onSnapshot,
   setDoc,
   updateDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
@@ -202,50 +203,57 @@ export class GameService {
     });
   }
 
-  async submitGuess(
-    gameId: string,
-    playerId: string,
-    sequence: number[]
-  ): Promise<void> {
+  async submitGuess(gameId: string, playerId: string, numbers: number[]) {
     const gameRef = doc(this.firestore, 'games', gameId);
-    const gameSnap = await getDoc(gameRef);
+    const game = (await getDoc(gameRef)).data() as Game;
 
-    if (!gameSnap.exists()) {
-      throw new Error('Game not found');
-    }
+    // Check if guess is correct
+    const isCorrect = numbers.every(
+      (num, index) => num === game.numberSet[index]
+    );
 
-    const game = gameSnap.data() as Game;
-    const isCorrect = this.checkGuess(sequence, game.numberSet);
+    if (isCorrect) {
+      // Calculate score based on round number (10 - roundNumber)
+      const score = 10 - game.roundNumber;
 
-    const guess: NumberGuess = {
-      playerId,
-      sequence,
-      timestamp: new Date(),
-      isCorrect,
-    };
+      // Update player's score
+      const updatedPlayers = game.players.map((player) => {
+        if (player.id === playerId) {
+          return {
+            ...player,
+            score: (player.score || 0) + score,
+          };
+        }
+        return player;
+      });
 
-    if (!isCorrect) {
-      // Player loses immediately
+      // Add the guess and update scores
       await updateDoc(gameRef, {
-        guesses: [...(game.guesses || []), guess],
-        [`players.${playerId}.score`]: 0,
+        guesses: arrayUnion({
+          playerId,
+          sequence: numbers,
+          timestamp: new Date().toISOString(),
+          isCorrect: true,
+        }),
+        players: updatedPlayers,
         updatedAt: new Date(),
       });
+
+      return { correct: true, score };
     } else {
-      // Player wins!
-      const score = 10 - game.roundNumber + 1;
+      // Just add the incorrect guess
       await updateDoc(gameRef, {
-        guesses: [...(game.guesses || []), guess],
-        [`players.${playerId}.score`]: score,
-        gameState: 'completed',
+        guesses: arrayUnion({
+          playerId,
+          sequence: numbers,
+          timestamp: new Date().toISOString(),
+          isCorrect: false,
+        }),
         updatedAt: new Date(),
       });
-    }
-  }
 
-  private checkGuess(guess: number[], actual: number[]): boolean {
-    if (guess.length !== actual.length) return false;
-    return guess.every((num, index) => num === actual[index]);
+      return { correct: false };
+    }
   }
 
   private generateHintBoard(numbers: number[]): HintCard[] {
