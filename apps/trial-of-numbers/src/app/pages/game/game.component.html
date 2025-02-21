@@ -29,6 +29,14 @@
   </div>
   }
 
+  <!-- Scoreboard -->
+  @if (game.gameState === 'in_progress') {
+  <app-scoreboard
+    [game]="game"
+    [currentPlayerId]="currentPlayer?.id"
+  ></app-scoreboard>
+  }
+
   <!-- Game Controls -->
   <app-game-controls
     *ngIf="currentPlayer"
@@ -37,12 +45,6 @@
   ></app-game-controls>
 
   <main class="game-board">
-    <!-- Add scoreboard -->
-    <app-scoreboard
-      [game]="game"
-      [currentPlayerId]="currentPlayer?.id"
-    ></app-scoreboard>
-
     <!-- Waiting State -->
     <div class="waiting-screen" *ngIf="game.gameState === 'waiting'">
       <h2>Waiting for Players</h2>

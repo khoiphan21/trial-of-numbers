@@ -8,7 +8,7 @@ import { Game, Player } from '../../models/game.interface';
   imports: [CommonModule],
   template: `
     <div class="scoreboard">
-      <h3>Players</h3>
+      <h3>Current Scores</h3>
       <div class="scores">
         @for (player of game.players; track player.id) {
         <div
@@ -22,7 +22,7 @@ import { Game, Player } from '../../models/game.interface';
             >
           </div>
           <div class="score-details">
-            <div class="points">Score: {{ player.score }}</div>
+            <div class="points">{{ player.score }} points</div>
             @if (hasCorrectGuess(player)) {
             <div class="correct-guess">✓ Correct!</div>
             }
@@ -35,14 +35,11 @@ import { Game, Player } from '../../models/game.interface';
   styles: [
     `
       .scoreboard {
-        position: fixed;
-        right: 2rem;
-        top: 8rem;
-        width: 250px;
         background: white;
-        border-radius: 8px;
         padding: 1rem;
+        border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
 
         h3 {
           margin: 0 0 1rem;
@@ -53,9 +50,9 @@ import { Game, Player } from '../../models/game.interface';
       }
 
       .scores {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
       }
 
       .player-score {

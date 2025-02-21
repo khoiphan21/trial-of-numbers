@@ -1,4 +1,11 @@
-import { Component, Input, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  inject,
+  OnInit,
+  SimpleChanges,
+  OnChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Game, Player } from '../../models/game.interface';
@@ -38,17 +45,28 @@ import { GameService } from '../../services/game.service';
               min="0"
               max="9"
               [(ngModel)]="guessNumbers[slot]"
+              (input)="validateInput($event)"
+              maxlength="1"
             />
           </div>
           }
         </div>
-        <button
-          class="submit-guess"
-          (click)="submitGuess()"
-          [disabled]="!isValidGuess()"
-        >
-          Submit Guess
-        </button>
+        <div class="button-group">
+          <button
+            class="submit-guess"
+            (click)="submitGuess()"
+            [disabled]="!isValidGuess()"
+          >
+            Submit Guess
+          </button>
+          <button
+            class="reset-guess"
+            (click)="resetGuess()"
+            [disabled]="!hasAnyInput()"
+          >
+            Reset
+          </button>
+        </div>
         } @else {
         <div class="guess-result" [class.correct]="lastGuessResult?.correct">
           <p>
@@ -127,24 +145,44 @@ import { GameService } from '../../services/game.service';
         }
       }
 
-      .submit-guess {
-        width: 100%;
+      .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .submit-guess,
+      .reset-guess {
         padding: 0.75rem;
-        background: #007bff;
-        color: white;
         border: none;
         border-radius: 4px;
         cursor: pointer;
         font-weight: 500;
         transition: all 0.2s ease;
 
-        &:hover:not(:disabled) {
-          background: #0056b3;
-        }
-
         &:disabled {
           background: #6c757d;
           cursor: not-allowed;
+        }
+      }
+
+      .submit-guess {
+        flex: 2;
+        background: #007bff;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: #0056b3;
+        }
+      }
+
+      .reset-guess {
+        flex: 1;
+        background: #6c757d;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: #5a6268;
         }
       }
 
@@ -176,7 +214,7 @@ import { GameService } from '../../services/game.service';
     `,
   ],
 })
-export class GameControlsComponent implements OnInit {
+export class GameControlsComponent implements OnInit, OnChanges {
   @Input() game!: Game;
   @Input() currentPlayer!: Player;
 
@@ -233,13 +271,57 @@ export class GameControlsComponent implements OnInit {
       this.hasGuessed = true;
     } catch (error) {
       console.error('Error submitting guess:', error);
-      // TODO: Add error handling UI
     }
+  }
+
+  validateInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.value.length > 1) {
+      input.value = input.value.slice(0, 1);
+    }
+    const num = parseInt(input.value);
+    if (isNaN(num) || num < 0 || num > 9) {
+      input.value = '';
+      const slot = input.id.replace(
+        'slot-',
+        ''
+      ) as keyof typeof this.guessNumbers;
+      delete this.guessNumbers[slot];
+    } else {
+      const slot = input.id.replace(
+        'slot-',
+        ''
+      ) as keyof typeof this.guessNumbers;
+      this.guessNumbers[slot] = num;
+    }
+  }
+
+  resetGuess() {
+    this.guessNumbers = {};
+  }
+
+  hasAnyInput(): boolean {
+    return Object.values(this.guessNumbers).some((val) => val !== undefined);
   }
 
   ngOnInit() {
     this.initializeLastGuessResult();
     this.startRoundTimer();
+    this.resetGuess();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // Reset inputs when round number changes (new game starts)
+    if (changes['game'] && !changes['game'].firstChange) {
+      const prevRound = changes['game'].previousValue?.roundNumber;
+      const currentRound = changes['game'].currentValue?.roundNumber;
+
+      if (prevRound !== currentRound) {
+        this.resetGuess();
+        this.lastGuessResult = undefined;
+        this.hasGuessed = false;
+      }
+    }
   }
 
   private initializeLastGuessResult() {
