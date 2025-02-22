@@ -66,6 +66,13 @@
     border-color: #007bff;
   }
 
+  &.disabled {
+    cursor: not-allowed;
+    background: #f8f9fa;
+    border-color: #dee2e6;
+    opacity: 0.7;
+  }
+
   .placeholder {
     color: #6c757d;
     font-size: 0.9rem;
@@ -77,6 +84,15 @@
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
+
+  &.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+
+    .hint-card {
+      cursor: not-allowed;
+    }
+  }
 }
 
 .submit-button {

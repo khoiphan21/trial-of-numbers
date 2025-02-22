@@ -52,6 +52,7 @@ type DropZone = ValidSlot | 'hand';
               class="drop-zone"
               [class.active]="canSubmitToSlot(slot)"
               [class.filled]="isSlotFilled(slot)"
+              [class.disabled]="hasMaxHints"
               cdkDropList
               [id]="'slot-' + slot"
               [cdkDropListData]="slot"
@@ -86,6 +87,7 @@ type DropZone = ValidSlot | 'hand';
       <!-- Player's Hand -->
       <div
         class="hand"
+        [class.disabled]="hasMaxHints"
         cdkDropList
         id="player-hand"
         [cdkDropListData]="'hand'"
@@ -120,7 +122,14 @@ export class PlayerHandComponent {
   readonly slotIds = this.SLOTS.map((slot) => `slot-${slot}`);
 
   get playerHand(): HintCard[] {
-    return this.game.playerHands[this.currentPlayer.id] || [];
+    const hand = this.game.playerHands[this.currentPlayer.id] || [];
+    // Filter out hints that are already selected
+    return hand.filter(
+      (hint) =>
+        !Object.values(this.selectedHints).some(
+          (selectedHint) => selectedHint?.id === hint.id
+        )
+    );
   }
 
   get currentRoundSubmission() {
@@ -133,13 +142,17 @@ export class PlayerHandComponent {
     );
   }
 
+  get hasMaxHints(): boolean {
+    return Object.keys(this.selectedHints).length >= 3;
+  }
+
   canSelectHint(hint: HintCard): boolean {
-    if (this.currentRoundSubmission) return false;
+    if (this.hasMaxHints) return false;
     return !Object.values(this.selectedHints).some((h) => h?.id === hint.id);
   }
 
   canSubmitToSlot(slot: ValidSlot): boolean {
-    if (this.currentRoundSubmission) return false;
+    if (this.currentRoundSubmission || this.hasMaxHints) return false;
     return !this.selectedHints[slot];
   }
 
@@ -195,6 +208,7 @@ export class PlayerHandComponent {
   canDropPredicate = (drag: CdkDrag<HintCard>, drop: CdkDropList<DropZone>) => {
     const slot = drop.data;
     if (slot === 'hand') return true;
+    if (this.hasMaxHints) return false;
     return this.canSubmitToSlot(slot as ValidSlot);
   };
 
