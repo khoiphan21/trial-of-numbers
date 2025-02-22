@@ -25,4 +25,5 @@ export interface NumberGuess extends AppEntity {
   playerId: string;
   sequence: number[];
   isCorrect: boolean;
+  submittedAt: string;
 }

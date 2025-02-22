@@ -1,1 +1,1 @@
-export * from './lib/model/model.component';
+export * from './lib/';

@@ -4,6 +4,8 @@ import {
   HintCard,
   HintSubmission,
   Player,
+  ValidSlot,
+  NumberGuess,
 } from '@luna-academy-trial-of-numbers/definitions';
 import { FIREBASE_APP } from '@luna-academy-trial-of-numbers/firebase';
 import {
@@ -15,9 +17,14 @@ import {
   onSnapshot,
   setDoc,
   updateDoc,
+  runTransaction,
 } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HintService } from './hint.service';
+import {
+  makeGame,
+  makeNumberGuess,
+} from '@luna-academy-trial-of-numbers/model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,12 +39,13 @@ export class GameService {
   constructor(private hintService: HintService) {}
 
   async createGame(playerName: string): Promise<string> {
-    const gameId = this.generateGameId();
     const playerId = crypto.randomUUID();
     this.currentPlayerId = playerId;
 
-    const newGame: Game = {
-      id: gameId,
+    const roundEndTime = new Date();
+    roundEndTime.setMinutes(roundEndTime.getMinutes() + 1);
+
+    const newGame: Game = makeGame({
       host: playerId,
       players: [
         {
@@ -53,11 +61,9 @@ export class GameService {
       playerSubmissions: {},
       flippedHints: [],
       gameState: 'waiting',
-      createdAt: new Date(),
-      updatedAt: new Date(),
       playerHands: {},
       currentRound: {
-        endTime: new Date(),
+        endTime: roundEndTime.toISOString(),
         submissions: {},
       },
       guesses: [],
@@ -67,10 +73,10 @@ export class GameService {
         C: { submittedHints: [], isRevealed: false },
         D: { submittedHints: [], isRevealed: false },
       },
-    };
+    });
 
-    await setDoc(doc(this.firestore, 'games', gameId), newGame);
-    return gameId;
+    await setDoc(doc(this.firestore, 'games', newGame.id), newGame);
+    return newGame.id;
   }
 
   async joinGame(gameId: string, playerName: string): Promise<string> {
@@ -203,93 +209,80 @@ export class GameService {
 
   async submitGuess(gameId: string, playerId: string, numbers: number[]) {
     const gameRef = doc(this.firestore, 'games', gameId);
-    const game = (await getDoc(gameRef)).data() as Game;
 
-    // Check if player has already guessed
-    if (game.guesses.some((guess) => guess.playerId === playerId)) {
-      throw new Error('You have already submitted a guess');
-    }
+    return await runTransaction(this.firestore, async (transaction) => {
+      const gameDoc = await transaction.get(gameRef);
+      const game = gameDoc.data() as Game;
 
-    // Check if guess is correct
-    const isCorrect = numbers.every(
-      (num, index) => num === game.numberSet[index]
-    );
+      if (game.guesses.some((guess) => guess.playerId === playerId)) {
+        throw new Error('You have already submitted a guess');
+      }
 
-    const updatedGame = { ...game };
+      const isCorrect = numbers.every(
+        (num, index) => num === game.numberSet[index]
+      );
 
-    if (isCorrect) {
-      // Calculate score based on round number (10 - roundNumber)
-      const score = 10 - game.roundNumber;
+      if (isCorrect) {
+        const score = 10 - game.roundNumber;
+        const updatedPlayers = game.players.map((player) => {
+          if (player.id === playerId) {
+            return {
+              ...player,
+              score: (player.score || 0) + score,
+            };
+          }
+          return player;
+        });
 
-      // Update player's score
-      const updatedPlayers = game.players.map((player) => {
-        if (player.id === playerId) {
-          return {
-            ...player,
-            score: (player.score || 0) + score,
-          };
+        const newGuess: NumberGuess = makeNumberGuess({
+          playerId,
+          sequence: numbers,
+          isCorrect: true,
+          submittedAt: new Date().toISOString(),
+        });
+
+        transaction.update(gameRef, {
+          guesses: arrayUnion(newGuess),
+          players: updatedPlayers,
+          updatedAt: new Date(),
+        });
+
+        const updatedGame = {
+          ...game,
+          guesses: [...game.guesses, newGuess],
+          players: updatedPlayers,
+        };
+
+        if (this.shouldEndRound(updatedGame)) {
+          await this.endRound(gameId);
         }
-        return player;
-      });
 
-      // Add the guess and update scores
-      await updateDoc(gameRef, {
-        guesses: arrayUnion({
+        return { correct: true, score };
+      } else {
+        const newGuess: NumberGuess = makeNumberGuess({
           playerId,
           sequence: numbers,
-          timestamp: new Date().toISOString(),
-          isCorrect: true,
-        }),
-        players: updatedPlayers,
-        updatedAt: new Date(),
-      });
-
-      updatedGame.guesses = [
-        ...game.guesses,
-        {
-          playerId,
-          sequence: numbers,
-          timestamp: new Date().toISOString(),
-          isCorrect: true,
-        },
-      ];
-      updatedGame.players = updatedPlayers;
-
-      // Check if round should end
-      if (this.shouldEndRound(updatedGame)) {
-        await this.endRound(gameId);
-      }
-
-      return { correct: true, score };
-    } else {
-      // Just add the incorrect guess
-      await updateDoc(gameRef, {
-        guesses: arrayUnion({
-          playerId,
-          sequence: numbers,
-          timestamp: new Date().toISOString(),
           isCorrect: false,
-        }),
-        updatedAt: new Date(),
-      });
+          submittedAt: new Date().toISOString(),
+        });
 
-      updatedGame.guesses = [
-        ...game.guesses,
-        {
-          playerId,
-          sequence: numbers,
-          timestamp: new Date().toISOString(),
-          isCorrect: false,
-        },
-      ];
+        transaction.update(gameRef, {
+          guesses: arrayUnion(newGuess),
+          updatedAt: new Date(),
+        });
 
-      // Check if round should end
-      if (this.shouldEndRound(updatedGame)) {
-        await this.endRound(gameId);
+        const updatedGame = {
+          ...game,
+          guesses: [...game.guesses, newGuess],
+        };
+
+        if (this.shouldEndRound(updatedGame)) {
+          await this.endRound(gameId);
+        }
+
+        return { correct: false };
       }
-
-      return { correct: false };
-    }
+    });
   }
 
   private generateHintBoard(numbers: number[]): HintCard[] {
@@ -362,70 +355,72 @@ export class GameService {
   async submitRoundHints(
     gameId: string,
     playerId: string,
-    hints: { slot: 'A' | 'B' | 'C' | 'D'; hint: HintCard }[]
+    hints: { slot: ValidSlot; hint: HintCard }[]
   ): Promise<void> {
     const gameRef = doc(this.firestore, 'games', gameId);
-    const gameSnap = await getDoc(gameRef);
 
-    if (!gameSnap.exists()) {
-      throw new Error('Game not found');
-    }
+    await runTransaction(this.firestore, async (transaction) => {
+      const gameDoc = await transaction.get(gameRef);
 
-    const game = gameSnap.data() as Game;
+      if (!gameDoc.exists()) {
+        throw new Error('Game not found');
+      }
 
-    // Validate submission
-    if (game.currentRound.submissions[playerId]) {
-      throw new Error('Already submitted hints for this round');
-    }
+      const game = gameDoc.data() as Game;
 
-    if (hints.length < 1 || hints.length > 3) {
-      throw new Error('Must submit between 1 and 3 hints');
-    }
+      // Validate submission
+      if (game.currentRound.submissions[playerId]) {
+        throw new Error('Already submitted hints for this round');
+      }
 
-    // Check for duplicate slots
-    const slots = hints.map((h) => h.slot);
-    if (new Set(slots).size !== slots.length) {
-      throw new Error('Cannot submit multiple hints for the same slot');
-    }
+      if (hints.length < 1 || hints.length > 3) {
+        throw new Error('Must submit between 1 and 3 hints');
+      }
 
-    // Add hints to both current round submissions and slot history
-    const updates: Record<string, any> = {
-      [`currentRound.submissions.${playerId}`]: {
-        playerId,
-        hints,
-      },
-      updatedAt: new Date(),
-    };
+      // Check for duplicate slots
+      const slots = hints.map((h) => h.slot);
+      if (new Set(slots).size !== slots.length) {
+        throw new Error('Cannot submit multiple hints for the same slot');
+      }
 
-    // Add hints to their respective slots
-    hints.forEach(({ slot, hint }) => {
-      const submission: HintSubmission = {
-        playerId,
-        hints: [{ slot, hint }],
-      };
-      updates[`slots.${slot}.submittedHints`] = [
-        ...game.slots[slot].submittedHints,
-        submission,
-      ];
-    });
-
-    await updateDoc(gameRef, updates);
-
-    // Check if all players have submitted
-    const updatedGame = {
-      ...game,
-      currentRound: {
-        ...game.currentRound,
-        submissions: {
-          ...game.currentRound.submissions,
-          [playerId]: { playerId, hints },
+      // Add hints to both current round submissions and slot history
+      const updates: Record<string, any> = {
+        [`currentRound.submissions.${playerId}`]: {
+          playerId,
+          hints,
         },
-      },
-    };
+        updatedAt: new Date(),
+      };
 
-    if (this.shouldEndRound(updatedGame)) {
-      await this.endRound(gameId);
-    }
+      // Add hints to their respective slots
+      hints.forEach(({ slot, hint }) => {
+        const submission: HintSubmission = {
+          playerId,
+          hints: [{ slot, hint }],
+        };
+        updates[`slots.${slot}.submittedHints`] = [
+          ...game.slots[slot].submittedHints,
+          submission,
+        ];
+      });
+
+      transaction.update(gameRef, updates);
+
+      const updatedGame = {
+        ...game,
+        currentRound: {
+          ...game.currentRound,
+          submissions: {
+            ...game.currentRound.submissions,
+            [playerId]: { playerId, hints },
+          },
+        },
+      };
+
+      if (this.shouldEndRound(updatedGame)) {
+        await this.endRound(gameId);
+      }
+    });
   }
 
   private shouldEndRound(game: Game): boolean {
@@ -453,20 +448,22 @@ export class GameService {
 
   private async endRound(gameId: string): Promise<void> {
     const gameRef = doc(this.firestore, 'games', gameId);
-    const gameSnap = await getDoc(gameRef);
-    const game = gameSnap.data() as Game;
 
-    // Start next round
-    const roundEndTime = new Date();
-    roundEndTime.setMinutes(roundEndTime.getMinutes() + 1);
+    await runTransaction(this.firestore, async (transaction) => {
+      const gameDoc = await transaction.get(gameRef);
+      const game = gameDoc.data() as Game;
 
-    await updateDoc(gameRef, {
-      currentRound: {
-        endTime: roundEndTime,
-        submissions: {},
-      },
-      roundNumber: game.roundNumber + 1,
-      updatedAt: new Date(),
+      const roundEndTime = new Date();
+      roundEndTime.setMinutes(roundEndTime.getMinutes() + 1);
+
+      transaction.update(gameRef, {
+        currentRound: {
+          endTime: roundEndTime.toISOString(),
+          submissions: {},
+        },
+        roundNumber: game.roundNumber + 1,
+        updatedAt: new Date(),
+      });
     });
   }
 

@@ -29,10 +29,12 @@
     </div>
     <button
       class="submit-button"
-      [disabled]="!canSubmitHints()"
+      [disabled]="!canSubmitHints() || isSubmitting"
       (click)="submitHints()"
     >
-      Submit Hints
+      @if (isSubmitting) {
+      <span class="spinner"></span>
+      Submitting... } @else { Submit Hints }
     </button>
   </div>
   }

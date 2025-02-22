@@ -119,6 +119,7 @@ export class PlayerHandComponent {
   @Input() currentPlayer!: Player;
 
   isDragging = false;
+  isSubmitting = false;
 
   private gameService = inject(GameService);
   selectedHints: Partial<Record<ValidSlot, HintCard>> = {};
@@ -194,20 +195,25 @@ export class PlayerHandComponent {
   }
 
   async submitHints() {
-    if (!this.canSubmitHints()) return;
+    if (!this.canSubmitHints() || this.isSubmitting) return;
 
-    const hints = Object.entries(this.selectedHints).map(([slot, hint]) => ({
-      slot: slot as ValidSlot,
-      hint: hint!,
-    }));
+    try {
+      this.isSubmitting = true;
+      const hints = Object.entries(this.selectedHints).map(([slot, hint]) => ({
+        slot: slot as ValidSlot,
+        hint: hint!,
+      }));
 
-    await this.gameService.submitRoundHints(
-      this.game.id,
-      this.currentPlayer.id,
-      hints
-    );
+      await this.gameService.submitRoundHints(
+        this.game.id,
+        this.currentPlayer.id,
+        hints
+      );
 
-    this.selectedHints = {};
+      this.selectedHints = {};
+    } finally {
+      this.isSubmitting = false;
+    }
   }
 
   canDropPredicate = (drag: CdkDrag<HintCard>, drop: CdkDropList<DropZone>) => {
