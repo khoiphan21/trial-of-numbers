@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HintCard } from '../models/game.interface';
+import { HintCard } from '@luna-academy-trial-of-numbers/definitions';
 
 type HintFrequency = {
   text: string;

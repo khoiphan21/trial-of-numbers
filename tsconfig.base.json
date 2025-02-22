@@ -15,6 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@luna-academy-trial-of-numbers/definitions": [
+        "libs/definitions/src/index.ts"
+      ],
       "@luna-academy-trial-of-numbers/firebase": ["libs/firebase/src/index.ts"]
     }
   },

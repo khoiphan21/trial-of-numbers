@@ -78,10 +78,10 @@
             <!-- Correct Hints -->
             <div class="hint-section correct-hints">
               <h4>Correct Hints</h4>
-              @if (game.slots?.[slot]?.submittedHints?.length) { @for
-              (submission of game.slots[slot].submittedHints; track
-              submission.playerId) { @for (hint of submission.hints; track
-              hint.hint.id) { @if (isHintValid(slot, hint.hint)) {
+              @if (game.slots[slot].submittedHints.length) { @for (submission of
+              game.slots[slot].submittedHints; track submission.playerId) { @for
+              (hint of submission.hints; track hint.hint.id) { @if
+              (isHintValid(slot, hint.hint)) {
               <app-hint-card
                 [hint]="hint.hint"
                 [correct]="true"
@@ -92,10 +92,10 @@
             <!-- Incorrect Hints -->
             <div class="hint-section incorrect-hints">
               <h4>Incorrect Hints</h4>
-              @if (game.slots?.[slot]?.submittedHints?.length) { @for
-              (submission of game.slots[slot].submittedHints; track
-              submission.playerId) { @for (hint of submission.hints; track
-              hint.hint.id) { @if (!isHintValid(slot, hint.hint)) {
+              @if (game.slots[slot].submittedHints.length) { @for (submission of
+              game.slots[slot].submittedHints; track submission.playerId) { @for
+              (hint of submission.hints; track hint.hint.id) { @if
+              (!isHintValid(slot, hint.hint)) {
               <app-hint-card
                 [hint]="hint.hint"
                 [incorrect]="true"

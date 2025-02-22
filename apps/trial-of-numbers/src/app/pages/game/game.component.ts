@@ -1,21 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { GameControlsComponent } from '../../components/game-controls/game-controls.component';
-import { PlayerHandComponent } from '../../components/player-hand/player-hand.component';
-import { HintCardComponent } from '../../components/hint-card/hint-card.component';
 import {
   Game,
+  getValidSlots,
   HintCard,
   HintSubmission,
   Player,
-} from '../../models/game.interface';
-import { GameService } from '../../services/game.service';
+  ValidSlot,
+} from '@luna-academy-trial-of-numbers/definitions';
+import { Subject, takeUntil } from 'rxjs';
+import { GameControlsComponent } from '../../components/game-controls/game-controls.component';
+import { HintCardComponent } from '../../components/hint-card/hint-card.component';
+import { PlayerHandComponent } from '../../components/player-hand/player-hand.component';
 import { ScoreboardComponent } from '../../components/scoreboard/scoreboard.component';
-import { FormsModule } from '@angular/forms';
-
-type ValidSlot = 'A' | 'B' | 'C' | 'D';
+import { GameService } from '../../services/game.service';
 
 @Component({
   selector: 'app-game',
@@ -37,7 +37,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private destroy$ = new Subject<void>();
 
-  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D'];
+  readonly SLOTS: ValidSlot[] = getValidSlots();
 
   game: Game | null = null;
   gameId: string | null = null;

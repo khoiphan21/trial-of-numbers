@@ -1,6 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HintCard } from '../../models/game.interface';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { HintCard } from '@luna-academy-trial-of-numbers/definitions';
 
 @Component({
   selector: 'app-hint-card',

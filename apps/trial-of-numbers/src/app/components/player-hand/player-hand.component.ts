@@ -1,17 +1,22 @@
-import { Component, Input, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HintCard, Game, Player } from '../../models/game.interface';
-import { HintCardComponent } from '../hint-card/hint-card.component';
-import { GameService } from '../../services/game.service';
 import {
-  DragDropModule,
-  CdkDragDrop,
   CdkDrag,
+  CdkDragDrop,
   CdkDropList,
+  DragDropModule,
 } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
+import { Component, inject, Input } from '@angular/core';
+import {
+  Game,
+  getValidSlots,
+  HintCard,
+  Player,
+  ValidSlot,
+} from '@luna-academy-trial-of-numbers/definitions';
+import { GameService } from '../../services/game.service';
+import { HintCardComponent } from '../hint-card/hint-card.component';
 
 // Move type declaration outside the class
-type ValidSlot = 'A' | 'B' | 'C' | 'D';
 type DropZone = ValidSlot | 'hand';
 
 @Component({
@@ -118,7 +123,7 @@ export class PlayerHandComponent {
   private gameService = inject(GameService);
   selectedHints: Partial<Record<ValidSlot, HintCard>> = {};
 
-  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D'];
+  readonly SLOTS: ValidSlot[] = getValidSlots();
   readonly slotIds = this.SLOTS.map((slot) => `slot-${slot}`);
 
   get playerHand(): HintCard[] {

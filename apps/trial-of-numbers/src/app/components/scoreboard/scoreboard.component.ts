@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Game, Player } from '../../models/game.interface';
+import { Game, Player } from '@luna-academy-trial-of-numbers/definitions';
 
 @Component({
   selector: 'app-scoreboard',

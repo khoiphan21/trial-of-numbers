@@ -1,14 +1,19 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
-  Input,
   inject,
+  Input,
+  OnChanges,
   OnInit,
   SimpleChanges,
-  OnChanges,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Game, Player, ValidSlot } from '../../models/game.interface';
+import {
+  Game,
+  getValidSlots,
+  Player,
+  ValidSlot,
+} from '@luna-academy-trial-of-numbers/definitions';
 import { GameService } from '../../services/game.service';
 
 @Component({
@@ -237,7 +242,7 @@ export class GameControlsComponent implements OnInit, OnChanges {
   @Input() currentPlayer!: Player;
 
   private gameService = inject(GameService);
-  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D'];
+  readonly SLOTS: ValidSlot[] = getValidSlots();
 
   guessNumbers: Record<string, number> = {};
   roundTimeLeft: number | null = null;

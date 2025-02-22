@@ -1,4 +1,10 @@
 import { Injectable } from '@angular/core';
+import {
+  Game,
+  HintCard,
+  HintSubmission,
+  Player,
+} from '@luna-academy-trial-of-numbers/definitions';
 import { FIREBASE_APP } from '@luna-academy-trial-of-numbers/firebase';
 import {
   FirestoreError,
@@ -11,12 +17,6 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
-import {
-  Game,
-  HintCard,
-  HintSubmission,
-  Player,
-} from '../models/game.interface';
 import { HintService } from './hint.service';
 
 @Injectable({
