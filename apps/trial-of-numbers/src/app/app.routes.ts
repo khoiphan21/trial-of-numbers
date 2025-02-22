@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-
+import { GAME_ROUTE_GAME_ID } from '@luna-academy-trial-of-numbers/definitions';
 export const appRoutes: Route[] = [
   {
     path: '',
@@ -7,7 +7,7 @@ export const appRoutes: Route[] = [
       import('./pages/lobby/lobby.component').then((m) => m.LobbyComponent),
   },
   {
-    path: 'game/:id',
+    path: GAME_ROUTE_GAME_ID,
     loadComponent: () =>
       import('./pages/game/game.component').then((m) => m.GameComponent),
   },
