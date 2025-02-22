@@ -13,18 +13,11 @@ type HintFrequency = {
 })
 export class HintService {
   private readonly hintFrequencies: HintFrequency[] = [
-    // High-Frequency Hints (15 each)
     {
       text: 'Even number',
       type: 'EVEN',
-      count: 15,
+      count: 1,
       validator: (num) => num % 2 === 0,
-    },
-    {
-      text: 'Odd number',
-      type: 'ODD',
-      count: 15,
-      validator: (num) => num % 2 !== 0,
     },
     {
       text: 'Greater than 4',
@@ -75,12 +68,6 @@ export class HintService {
       validator: this.isPrime,
     },
     {
-      text: 'Composite number',
-      type: 'COMPOSITE',
-      count: 10,
-      validator: (num) => !this.isPrime(num) && num > 1,
-    },
-    {
       text: 'Divisible by 3',
       type: 'DIVISIBLE',
       count: 10,
@@ -93,45 +80,22 @@ export class HintService {
       validator: (num) => num % 5 === 0,
     },
 
-    // Less Frequent Hints (5 each)
-    {
-      text: 'Larger than the number on the left',
-      type: 'RELATIVE_POSITION',
-      count: 5,
-      validator: (num, pos, numbers) => pos > 0 && num > numbers[pos - 1],
-    },
-    {
-      text: 'Smaller than the number on the right',
-      type: 'RELATIVE_POSITION',
-      count: 5,
-      validator: (num, pos, numbers) => pos < 4 && num < numbers[pos + 1],
-    },
     {
       text: 'Between 3 and 8',
       type: 'RANGE',
-      count: 5,
+      count: 10,
       validator: (num) => num > 3 && num < 8,
     },
     {
-      text: 'Adds up to 3 with an adjacent number',
-      type: 'SUM_ADJACENT',
-      count: 5,
-      validator: (num, pos, numbers) =>
-        (pos > 0 && num + numbers[pos - 1] === 3) ||
-        (pos < 4 && num + numbers[pos + 1] === 3),
-    },
-    {
-      text: 'Adds up to 4 with an adjacent number',
-      type: 'SUM_ADJACENT',
-      count: 5,
-      validator: (num, pos, numbers) =>
-        (pos > 0 && num + numbers[pos - 1] === 4) ||
-        (pos < 4 && num + numbers[pos + 1] === 4),
+      text: 'Between 2 and 7',
+      type: 'RANGE',
+      count: 10,
+      validator: (num) => num > 2 && num < 7,
     },
     {
       text: 'Next to a prime number',
       type: 'ADJACENT',
-      count: 5,
+      count: 10,
       validator: (num, pos, numbers) =>
         (pos > 0 && this.isPrime(numbers[pos - 1])) ||
         (pos < 4 && this.isPrime(numbers[pos + 1])),

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Game, Player } from '../../models/game.interface';
+import { Game, Player, ValidSlot } from '../../models/game.interface';
 import { GameService } from '../../services/game.service';
 
 @Component({
@@ -237,7 +237,7 @@ export class GameControlsComponent implements OnInit, OnChanges {
   @Input() currentPlayer!: Player;
 
   private gameService = inject(GameService);
-  readonly SLOTS = ['A', 'B', 'C', 'D', 'E'];
+  readonly SLOTS: ValidSlot[] = ['A', 'B', 'C', 'D'];
 
   guessNumbers: Record<string, number> = {};
   roundTimeLeft: number | null = null;
