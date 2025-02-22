@@ -1,9 +1,9 @@
+import { AppEntity } from './app-entity';
 import { HintCard, HintSubmission, SlotState } from './hint';
 import { Player } from './player';
 import { ValidSlot } from './slot';
 
-export interface Game {
-  id: string;
+export interface Game extends AppEntity {
   host: string;
   players: Player[];
   roundNumber: number;
@@ -12,20 +12,17 @@ export interface Game {
   playerSubmissions: Record<string, HintCard[]>;
   flippedHints: HintCard[];
   gameState: 'waiting' | 'in_progress' | 'completed';
-  createdAt: Date;
-  updatedAt: Date;
   playerHands: Record<string, HintCard[]>;
   currentRound: {
-    endTime: Date;
+    endTime: string;
     submissions: Record<string, HintSubmission>;
   };
   guesses: NumberGuess[];
   slots: Record<ValidSlot, SlotState>;
 }
 
-export interface NumberGuess {
+export interface NumberGuess extends AppEntity {
   playerId: string;
   sequence: number[];
-  timestamp: string;
   isCorrect: boolean;
 }
