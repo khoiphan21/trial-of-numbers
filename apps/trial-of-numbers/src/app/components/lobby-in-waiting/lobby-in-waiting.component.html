@@ -42,7 +42,16 @@
     <p>{{ lobby.gameState }}</p>
   </div>
 
-  @if (canStartGame) {
+  @if (isHost) {
+  <div class="settings-container">
+    <label for="digits" class="settings-label">Number of Digits:</label>
+    <select id="digits" [(ngModel)]="numberOfDigits" class="digits-select">
+      @for (option of digitOptions; track option) {
+      <option [value]="option">{{ option }} digits</option>
+      }
+    </select>
+  </div>
+  } @if (canStartGame) {
   <button class="start-game-button" (click)="startGame()">Start Game</button>
   } @else if (isHost) {
   <p class="waiting-message">

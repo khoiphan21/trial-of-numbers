@@ -6,6 +6,8 @@ import {
   getFirestore,
   onSnapshot,
   runTransaction,
+  updateDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HintService } from './hint.service';
@@ -130,40 +132,13 @@ export class GameService {
     });
   }
 
-  async startGame(gameId: string): Promise<void> {
-    // const gameRef = doc(this.firestore, 'games', gameId);
-    // const gameSnap = await getDoc(gameRef);
-    // if (!gameSnap.exists()) {
-    //   throw new Error('Game not found');
-    // }
-    // const game = gameSnap.data() as Game;
-    // if (game.gameState !== 'waiting') {
-    //   throw new Error('Game already started');
-    // }
-    // const deck = this.hintService.generateGameDeck(game.numberSet);
-    // const playerHands: Record<string, HintCard[]> = {};
-    // game.players.forEach((player) => {
-    //   playerHands[player.id] = this.hintService.dealPlayerHand(deck);
-    // });
-    // const roundEndTime = new Date();
-    // roundEndTime.setMinutes(roundEndTime.getMinutes() + 1);
-    // await updateDoc(gameRef, {
-    //   gameState: 'in_progress',
-    //   playerHands,
-    //   currentRound: {
-    //     endTime: roundEndTime,
-    //     submissions: {},
-    //   },
-    //   slots: {
-    //     A: { submittedHints: [], isRevealed: false },
-    //     B: { submittedHints: [], isRevealed: false },
-    //     C: { submittedHints: [], isRevealed: false },
-    //     D: { submittedHints: [], isRevealed: false },
-    //     E: { submittedHints: [], isRevealed: false },
-    //   },
-    //   roundNumber: 1,
-    //   updatedAt: new Date(),
-    // });
+  async startGame(gameId: string, numberOfDigits: number): Promise<void> {
+    const gameRef = doc(this.firestore, 'games', gameId);
+    return updateDoc(gameRef, {
+      status: 'in-progress',
+      numberOfDigits,
+      startedAt: serverTimestamp(),
+    });
   }
 
   async submitHint(gameId: string, playerId: string): Promise<void> {

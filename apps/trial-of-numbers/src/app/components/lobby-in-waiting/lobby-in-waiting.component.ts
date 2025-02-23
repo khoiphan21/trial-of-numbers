@@ -1,13 +1,19 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
-import { hardDeletePlayer, updateLobbySession } from '@luna/api';
-import { LobbySession, Player } from '@luna/definitions';
+import { FormsModule } from '@angular/forms';
+import { hardDeletePlayer, startNewGameSession } from '@luna/api';
+import {
+  DIGIT_COUNT_OPTIONS,
+  DigitCount,
+  LobbySession,
+  Player,
+} from '@luna/definitions';
 
 @Component({
   selector: 'app-lobby-in-waiting',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './lobby-in-waiting.component.html',
   styleUrls: ['./lobby-in-waiting.component.scss'],
 })
@@ -20,6 +26,8 @@ export class LobbyInWaitingComponent {
   @Input() isHost = false;
 
   copied = false;
+  readonly digitOptions = DIGIT_COUNT_OPTIONS;
+  numberOfDigits: DigitCount = 4;
 
   get canStartGame(): boolean {
     return this.isHost && this.players.length >= 2;
@@ -51,10 +59,9 @@ export class LobbyInWaitingComponent {
     if (!this.canStartGame) return;
 
     try {
-      await updateLobbySession(this.lobby.id, {
-        replace: {
-          gameState: 'in_progress',
-        },
+      await startNewGameSession({
+        lobby: this.lobby,
+        digitCount: this.numberOfDigits,
       });
     } catch (error) {
       console.error('Error starting game:', error);

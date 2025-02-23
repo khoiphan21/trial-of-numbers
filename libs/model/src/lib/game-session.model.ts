@@ -7,7 +7,7 @@ export const makeGameSession = createMakeFunction<GameSession>(
     ...makeAppEntity(),
     _type: 'GameSession',
     lobbySessionId: '',
-    roundNumber: 0,
+    roundNumber: 1,
     numberSet: [],
   })
 );
