@@ -30,7 +30,7 @@ export class LobbyInWaitingComponent {
   numberOfDigits: DigitCount = 4;
 
   get canStartGame(): boolean {
-    return this.isHost && this.players.length >= 2;
+    return this.isHost && this.players.length >= 1;
   }
 
   copyInviteLink() {
