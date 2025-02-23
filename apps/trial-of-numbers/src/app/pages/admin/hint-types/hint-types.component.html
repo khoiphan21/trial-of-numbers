@@ -3,18 +3,81 @@
     <h2>Hint Types</h2>
 
     <form [formGroup]="hintTypeForm" (ngSubmit)="addHintType()">
-      <input formControlName="name" placeholder="Name" />
-      <input formControlName="description" placeholder="Description" />
-      <input formControlName="validationRule" placeholder="Validation Rule" />
-      <button type="submit">Add Hint Type</button>
+      <input
+        formControlName="name"
+        placeholder="Name"
+        aria-label="Hint type name"
+      />
+      <input
+        formControlName="description"
+        placeholder="Description"
+        aria-label="Hint type description"
+      />
+      <input
+        formControlName="validationRule"
+        placeholder="Validation Rule (JEXL expression)"
+        aria-label="Validation rule"
+      />
+      <button type="submit" [disabled]="!hintTypeForm.valid">
+        Add Hint Type
+      </button>
     </form>
 
-    @for (hintType of hintTypes$ | async; track hintType.id) {
+    @if ((hintTypes$ | async)?.length) { @for (hintType of hintTypes$ | async;
+    track hintType.id) {
     <div class="hint-type-item">
+      @if (editingState && editingState.id === hintType.id) {
+      <form [formGroup]="editingState.form" class="edit-form">
+        <input
+          formControlName="name"
+          placeholder="Name"
+          aria-label="Edit hint type name"
+        />
+        <input
+          formControlName="description"
+          placeholder="Description"
+          aria-label="Edit hint type description"
+        />
+        <input
+          formControlName="validationRule"
+          placeholder="Validation Rule (JEXL expression)"
+          aria-label="Edit validation rule"
+        />
+        @if (editingState) {
+        <div class="button-group">
+          <button
+            type="button"
+            class="save-button"
+            [disabled]="!editingState.form.valid"
+            (click)="updateHintType(hintType.id)"
+          >
+            Save
+          </button>
+          <button type="button" class="cancel-button" (click)="cancelEditing()">
+            Cancel
+          </button>
+        </div>
+        }
+      </form>
+      } @else {
       <h3>{{ hintType.name }}</h3>
       <p>{{ hintType.description }}</p>
-      <p>Rule: {{ hintType.validationRule }}</p>
-      <button (click)="deleteHintType(hintType.id)">Delete</button>
+      <p>
+        Rule: <code>{{ hintType.validationRule }}</code>
+      </p>
+      <div class="button-group">
+        <button class="edit-button" (click)="startEditing(hintType)">
+          Edit
+        </button>
+        <button class="delete-button" (click)="deleteHintType(hintType.id)">
+          Delete
+        </button>
+      </div>
+      }
+    </div>
+    } } @else {
+    <div class="no-hint-types">
+      <p>No hint types found</p>
     </div>
     }
   </section>
@@ -22,7 +85,11 @@
   <section class="playground">
     <h2>Validation Playground</h2>
     <form [formGroup]="playgroundForm">
-      <select formControlName="selectedHintTypeId">
+      <select
+        formControlName="selectedHintTypeId"
+        aria-label="Select hint type"
+      >
+        <option value="">Select a hint type</option>
         @for (hintType of hintTypes$ | async; track hintType.id) {
         <option [value]="hintType.id">{{ hintType.name }}</option>
         }
@@ -32,9 +99,43 @@
         formControlName="context"
         placeholder="Enter JSON context"
         rows="5"
+        aria-label="JSON context"
+        [class.invalid]="playgroundForm.get('context')?.errors?.['invalidJson']"
       ></textarea>
 
-      <button type="button" (click)="testValidation()">Test Validation</button>
+      @if (playgroundForm.get('context')?.errors?.['invalidJson']) {
+      <div class="error-message">Invalid JSON format</div>
+      }
+
+      <button
+        type="button"
+        (click)="testValidation()"
+        [disabled]="!playgroundForm.valid"
+      >
+        Test Validation
+      </button>
+
+      @if (validationResult$ | async; as result) {
+      <div
+        class="validation-result"
+        [class.success]="result.isValid"
+        [class.error]="!result.isValid"
+      >
+        @if (result.isValid) {
+        <p>✓ Validation successful</p>
+        <p class="evaluation-result">
+          Rule evaluated to: <strong>{{ result.evaluatedValue }}</strong>
+        </p>
+        } @else {
+        <p>✗ Validation failed</p>
+        <p class="error-details">{{ result.error }}</p>
+        @if (result.evaluatedValue !== undefined) {
+        <p class="evaluation-result">
+          Rule evaluated to: <strong>{{ result.evaluatedValue }}</strong>
+        </p>
+        } }
+      </div>
+      }
     </form>
   </section>
 </div>
