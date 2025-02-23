@@ -1,1 +1,70 @@
-<p>player-hand works!</p>
+<div
+  class="player-hand-container"
+  *ngIf="{
+  hasSelectedHints: hasSelectedHints$ | async,
+} as context"
+>
+  <div class="header">
+    <h3>Available Hints</h3>
+    <button
+      class="submit-all-button"
+      (click)="submitAllHints()"
+      [disabled]="!context.hasSelectedHints"
+      role="button"
+      aria-label="Submit all selected hints"
+    >
+      Submit All
+    </button>
+  </div>
+
+  <div class="hint-submission-area">
+    @for (column of hintBoard.sortedColumns; track column.slotIndex) {
+    <div class="hint-submission-area-column">
+      <div class="hint-submission-area-column-header">
+        <h4>{{ column.slotIndex + 1 }}</h4>
+      </div>
+      <div
+        class="hint-drop-zone"
+        [attr.data-slot-index]="column.slotIndex"
+        [class.has-hint]="isSlotSelected(column.slotIndex)"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop($event, column.slotIndex)"
+      >
+        @if (selectedHints$ | async; as selectedHints) { @if
+        (selectedHints[column.slotIndex]) {
+        <div class="selected-hint">
+          {{ selectedHints[column.slotIndex]?.name }}
+        </div>
+        } }
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="hint-types">
+    @if (hintTypes$ | async; as hintTypes) { @for (hintType of
+    getAvailableHintTypes(hintTypes); track hintType.id) {
+    <div
+      class="hint-type-card"
+      draggable="true"
+      (dragstart)="onDragStart($event, hintType)"
+      (touchstart)="onTouchStart($event, hintType)"
+      (touchmove)="onTouchMove($event)"
+      (touchend)="onTouchEnd($event, -1)"
+      (touchcancel)="onTouchCancel($event)"
+      role="button"
+      [attr.aria-label]="'Select hint: ' + hintType.name"
+    >
+      <span class="hint-name">{{ hintType.name }}</span>
+      <button
+        class="info-button"
+        type="button"
+        (click)="showHintInfo($event, hintType.description)"
+        aria-label="Show hint description"
+      >
+        ?
+      </button>
+    </div>
+    } }
+  </div>
+</div>
