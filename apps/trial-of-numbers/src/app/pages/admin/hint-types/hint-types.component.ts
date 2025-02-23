@@ -61,7 +61,9 @@ export class HintTypesComponent {
 
   playgroundForm = this.fb.group({
     selectedHintTypeId: ['', Validators.required],
-    context: ['{}', [Validators.required, this.validateJson]],
+    slotNumber: [''],
+    leftNumber: [''],
+    rightNumber: [''],
   });
 
   isEditing = false;
@@ -137,12 +139,21 @@ export class HintTypesComponent {
   }
 
   async testValidation() {
-    if (!this.playgroundForm.valid) return;
+    if (!this.playgroundForm.get('selectedHintTypeId')?.value) return;
 
     try {
-      const context = JSON.parse(
-        this.playgroundForm.get('context')?.value || '{}'
-      );
+      const context = {
+        slotNumber: this.playgroundForm.value.slotNumber
+          ? Number(this.playgroundForm.value.slotNumber)
+          : -1,
+        leftNumber: this.playgroundForm.value.leftNumber
+          ? Number(this.playgroundForm.value.leftNumber)
+          : -1,
+        rightNumber: this.playgroundForm.value.rightNumber
+          ? Number(this.playgroundForm.value.rightNumber)
+          : -1,
+      };
+
       const selectedHintTypeId =
         this.playgroundForm.get('selectedHintTypeId')?.value;
 
@@ -165,7 +176,6 @@ export class HintTypesComponent {
       }
 
       try {
-        // Use the JEXL instance to evaluate
         const result = await jexl.eval(hintType.validationRule, context);
 
         if (typeof result !== 'boolean') {
@@ -188,21 +198,12 @@ export class HintTypesComponent {
           }`,
         });
       }
-    } catch (e) {
+    } catch (error) {
+      console.error('Error testing validation:', error);
       this.validationResult$.next({
         isValid: false,
-        error: e instanceof Error ? e.message : 'Invalid JSON context',
+        error: 'An unexpected error occurred',
       });
-    }
-  }
-
-  private validateJson(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) return null;
-    try {
-      JSON.parse(control.value);
-      return null;
-    } catch (e) {
-      return { invalidJson: true };
     }
   }
 }

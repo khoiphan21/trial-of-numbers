@@ -1,3 +1,4 @@
+export * from './game-constants';
 export * from './game-session';
 export * from './game-state';
 export * from './hint-submission';

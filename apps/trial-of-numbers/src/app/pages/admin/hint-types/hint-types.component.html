@@ -94,25 +94,29 @@
         }
       </select>
 
-      <textarea
-        formControlName="context"
-        placeholder="Enter JSON context"
-        rows="5"
-        aria-label="JSON context"
-        [class.invalid]="playgroundForm.get('context')?.errors?.['invalidJson']"
-      ></textarea>
+      @if (playgroundForm.get('selectedHintTypeId')?.value) {
+      <div class="number-inputs">
+        <input
+          type="number"
+          formControlName="slotNumber"
+          placeholder="Slot Number"
+          min="0"
+        />
+        <input
+          type="number"
+          formControlName="leftNumber"
+          placeholder="Left Number"
+          min="0"
+        />
+        <input
+          type="number"
+          formControlName="rightNumber"
+          placeholder="Right Number"
+          min="0"
+        />
+      </div>
 
-      @if (playgroundForm.get('context')?.errors?.['invalidJson']) {
-      <div class="error-message">Invalid JSON format</div>
-      }
-
-      <button
-        type="button"
-        (click)="testValidation()"
-        [disabled]="!playgroundForm.valid"
-      >
-        Test Validation
-      </button>
+      <button type="button" (click)="testValidation()">Test Validation</button>
 
       @if (validationResult$ | async; as result) {
       <div
@@ -134,7 +138,7 @@
         </p>
         } }
       </div>
-      }
+      } }
     </form>
   </section>
 </div>
