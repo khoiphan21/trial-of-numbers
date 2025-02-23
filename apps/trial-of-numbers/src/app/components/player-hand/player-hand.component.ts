@@ -12,7 +12,7 @@ import {
   HintCard,
   Player,
   ValidSlot,
-} from '@luna-academy-trial-of-numbers/definitions';
+} from '@luna/definitions';
 import { GameService } from '../../services/game.service';
 import { HintCardComponent } from '../hint-card/hint-card.component';
 

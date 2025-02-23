@@ -8,12 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  Game,
-  getValidSlots,
-  Player,
-  ValidSlot,
-} from '@luna-academy-trial-of-numbers/definitions';
+import { Game, getValidSlots, Player, ValidSlot } from '@luna/definitions';
 import { GameService } from '../../services/game.service';
 
 @Component({

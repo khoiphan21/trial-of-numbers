@@ -4,10 +4,15 @@ export type ImageUrl = string;
 export type PropertyName = string;
 export type SignedUrl = string;
 export type Base64ImageData = string;
+export type JexlExpression = string;
 
 // Aliases for Model IDs
+export type BatchId = UUID;
 export type AppEntityId = UUID;
+export type LobbySessionId = UUID;
+export type GameSessionId = UUID;
 export type GameId = UUID;
+export type PlayerId = UUID;
 
 export type EmailAddress = string;
 export type HexColor = string; // Such as '#000000', '#FF0000', '#0000FF', etc.

@@ -1,4 +1,4 @@
-import { Result } from '@luna-academy-trial-of-numbers/definitions';
+import { Result } from '@luna/definitions';
 import { formatResultListError } from './format-result-list-error';
 
 export function flatMapResults<T>(

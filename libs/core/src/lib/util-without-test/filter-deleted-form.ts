@@ -1,4 +1,4 @@
-import { ArrayOrList } from '@luna-academy-trial-of-numbers/definitions';
+import { ArrayOrList } from '@luna/definitions';
 import { List } from 'immutable';
 
 interface SoftDeletableEntity {

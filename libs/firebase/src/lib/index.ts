@@ -1,1 +1,1 @@
-export * from './config';
+export * from './attempt-initialize-app';

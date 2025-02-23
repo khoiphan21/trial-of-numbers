@@ -1,4 +1,4 @@
-import { Result } from '@luna-academy-trial-of-numbers/definitions';
+import { Result } from '@luna/definitions';
 import { ResultError } from '../result-error';
 import { SnackbarService } from '../services/snack-bar.service';
 

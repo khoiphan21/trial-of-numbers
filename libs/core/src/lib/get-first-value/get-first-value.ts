@@ -1,4 +1,4 @@
-import { TimeInMilliseconds } from '@luna-academy-trial-of-numbers/definitions';
+import { TimeInMilliseconds } from '@luna/definitions';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { notNullOrUndefined } from '../value-checker';

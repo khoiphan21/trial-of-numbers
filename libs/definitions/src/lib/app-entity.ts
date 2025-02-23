@@ -5,15 +5,12 @@ import { UUID } from './aliases';
 export interface AppEntity {
   readonly id: UUID;
 
+  readonly _type: CollectionType;
   readonly _deleted: boolean;
   readonly _deletedAt: number;
   readonly _createdAt: number;
-  readonly _createdBy: string;
   readonly _updatedAt: number;
-  readonly _updatedBy: string;
   readonly _version: string;
 
   readonly order: number;
-
-  readonly _type: CollectionType;
 }

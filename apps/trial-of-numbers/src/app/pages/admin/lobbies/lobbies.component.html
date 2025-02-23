@@ -1,0 +1,11 @@
+<div class="lobbies-container">
+  <h2>Active Lobbies</h2>
+
+  @for (lobby of lobbies$ | async; track lobby.id) {
+  <div class="lobby-item">
+    <h3>Join Code: {{ lobby.joinCode }}</h3>
+    <p>Host ID: {{ lobby.hostId }}</p>
+    <p>ID: {{ lobby.id }}</p>
+  </div>
+  }
+</div>

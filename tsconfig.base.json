@@ -15,12 +15,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@luna-academy-trial-of-numbers/core": ["libs/core/src/index.ts"],
-      "@luna-academy-trial-of-numbers/definitions": [
-        "libs/definitions/src/index.ts"
-      ],
-      "@luna-academy-trial-of-numbers/firebase": ["libs/firebase/src/index.ts"],
-      "@luna-academy-trial-of-numbers/model": ["libs/model/src/index.ts"]
+      "@luna/api": ["libs/api/src/index.ts"],
+      "@luna/core": ["libs/core/src/index.ts"],
+      "@luna/definitions": ["libs/definitions/src/index.ts"],
+      "@luna/firebase": ["libs/firebase/src/index.ts"],
+      "@luna/model": ["libs/model/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

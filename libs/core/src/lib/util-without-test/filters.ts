@@ -1,7 +1,4 @@
-import {
-  EntityWithId,
-  ArrayOrList,
-} from '@luna-academy-trial-of-numbers/definitions';
+import { EntityWithId, ArrayOrList } from '@luna/definitions';
 import { List } from 'immutable';
 import { notNullOrUndefined } from '../value-checker';
 

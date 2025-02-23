@@ -1,7 +1,4 @@
-import {
-  EntityWithId,
-  EntityWithIdAndVersion,
-} from '@luna-academy-trial-of-numbers/definitions';
+import { EntityWithId, EntityWithIdAndVersion } from '@luna/definitions';
 
 export const trackById = (index: number, id: string) => id;
 

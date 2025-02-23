@@ -9,7 +9,7 @@ import {
   HintSubmission,
   Player,
   ValidSlot,
-} from '@luna-academy-trial-of-numbers/definitions';
+} from '@luna/definitions';
 import { Subject, takeUntil } from 'rxjs';
 import { GameControlsComponent } from '../../components/game-controls/game-controls.component';
 import { HintCardComponent } from '../../components/hint-card/hint-card.component';

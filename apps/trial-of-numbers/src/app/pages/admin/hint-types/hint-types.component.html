@@ -1,0 +1,40 @@
+<div class="hint-types-container">
+  <section class="hint-types-list">
+    <h2>Hint Types</h2>
+
+    <form [formGroup]="hintTypeForm" (ngSubmit)="addHintType()">
+      <input formControlName="name" placeholder="Name" />
+      <input formControlName="description" placeholder="Description" />
+      <input formControlName="validationRule" placeholder="Validation Rule" />
+      <button type="submit">Add Hint Type</button>
+    </form>
+
+    @for (hintType of hintTypes$ | async; track hintType.id) {
+    <div class="hint-type-item">
+      <h3>{{ hintType.name }}</h3>
+      <p>{{ hintType.description }}</p>
+      <p>Rule: {{ hintType.validationRule }}</p>
+      <button (click)="deleteHintType(hintType.id)">Delete</button>
+    </div>
+    }
+  </section>
+
+  <section class="playground">
+    <h2>Validation Playground</h2>
+    <form [formGroup]="playgroundForm">
+      <select formControlName="selectedHintTypeId">
+        @for (hintType of hintTypes$ | async; track hintType.id) {
+        <option [value]="hintType.id">{{ hintType.name }}</option>
+        }
+      </select>
+
+      <textarea
+        formControlName="context"
+        placeholder="Enter JSON context"
+        rows="5"
+      ></textarea>
+
+      <button type="button" (click)="testValidation()">Test Validation</button>
+    </form>
+  </section>
+</div>

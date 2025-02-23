@@ -1,4 +1,4 @@
-import { UUID } from '@luna-academy-trial-of-numbers/definitions';
+import { UUID } from '@luna/definitions';
 import { Set } from 'immutable';
 
 export class VersionService {

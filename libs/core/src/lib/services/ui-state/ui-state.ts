@@ -1,4 +1,4 @@
-import { GameId } from '@luna-academy-trial-of-numbers/definitions';
+import { GameId } from '@luna/definitions';
 
 export interface UIState {
   // add more here for more ui states

@@ -1,7 +1,4 @@
-import {
-  AppEntity,
-  CollectionType,
-} from '@luna-academy-trial-of-numbers/definitions';
+import { AppEntity, CollectionType } from '@luna/definitions';
 import { makeAppEntity } from '../app-entity.model';
 
 export const createMakeFunction = <Entity extends AppEntity>(

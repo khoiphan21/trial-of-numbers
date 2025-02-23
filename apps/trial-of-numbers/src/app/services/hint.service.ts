@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HintCard } from '@luna-academy-trial-of-numbers/definitions';
 
 type HintFrequency = {
   text: string;
-  type: HintCard['type'];
+  type: any['type'];
   count: number;
   validator: (num: number, position: number, numbers: number[]) => boolean;
 };
@@ -102,33 +101,34 @@ export class HintService {
     },
   ];
 
-  generateGameDeck(numbers: number[]): HintCard[] {
-    const deck: HintCard[] = [];
+  generateGameDeck(numbers: number[]): any[] {
+    return [];
+    // const deck: HintCard[] = [];
 
-    this.hintFrequencies.forEach((hintType) => {
-      // Create the specified number of each hint type
-      for (let i = 0; i < hintType.count; i++) {
-        // For each number in the sequence, check if the hint applies
-        numbers.forEach((num, position) => {
-          if (hintType.validator(num, position, numbers)) {
-            deck.push({
-              id: crypto.randomUUID(),
-              text: hintType.text,
-              type: hintType.type,
-              value: num,
-              slot: String.fromCharCode(65 + position) as 'A' | 'B' | 'C' | 'D',
-              isFlipped: false,
-            });
-          }
-        });
-      }
-    });
+    // this.hintFrequencies.forEach((hintType) => {
+    //   // Create the specified number of each hint type
+    //   for (let i = 0; i < hintType.count; i++) {
+    //     // For each number in the sequence, check if the hint applies
+    //     numbers.forEach((num, position) => {
+    //       if (hintType.validator(num, position, numbers)) {
+    //         deck.push({
+    //           id: crypto.randomUUID(),
+    //           text: hintType.text,
+    //           type: hintType.type,
+    //           value: num,
+    //           slot: String.fromCharCode(65 + position) as 'A' | 'B' | 'C' | 'D',
+    //           isFlipped: false,
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
 
-    return this.shuffleArray(deck);
+    // return this.shuffleArray(deck);
   }
 
-  dealPlayerHand(deck: HintCard[]): HintCard[] {
-    return this.shuffleArray(deck).slice(0, 10);
+  dealPlayerHand(deck: any[]) {
+    return [];
   }
 
   private isPrime(num: number): boolean {
