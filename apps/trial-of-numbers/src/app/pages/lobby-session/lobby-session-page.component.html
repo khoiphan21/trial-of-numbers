@@ -1,0 +1,17 @@
+<div class="container">
+  <h1>Lobby</h1>
+
+  @if (lobbySession$ | async; as lobby) { @if (lobby.gameState === 'waiting') {
+  @if (players$ | async; as players) {
+  <app-lobby-in-waiting
+    [lobby]="lobby"
+    [players]="players"
+    [currentPlayerId]="currentPlayerId"
+    [isHost]="isHost"
+  />
+  } } @else {
+  <app-game-in-progress [lobby]="lobby" />
+  } } @else {
+  <div class="loading">Loading lobby...</div>
+  }
+</div>

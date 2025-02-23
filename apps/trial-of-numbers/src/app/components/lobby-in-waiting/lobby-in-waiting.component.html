@@ -1,0 +1,52 @@
+<div class="lobby-info">
+  <h2>Join Code</h2>
+  <div class="code-container">
+    <span class="join-code">{{ lobby.joinCode }}</span>
+    <button (click)="copyInviteLink()" class="copy-button">
+      {{ copied ? 'Copied!' : 'Copy Invite Link' }}
+    </button>
+  </div>
+
+  <div class="players-section">
+    <h3>Players ({{ players.length }})</h3>
+    <div class="players-list">
+      @for (player of players; track player.id) {
+      <div
+        class="player-item"
+        [class.current-player]="player.id === currentPlayerId"
+      >
+        <div class="player-info">
+          <span class="player-name">{{ player.name }}</span>
+          @if (player.id === lobby.hostId) {
+          <span class="host-badge">Host</span>
+          } @if (player.id === currentPlayerId) {
+          <span class="you-badge">You</span>
+          }
+        </div>
+        @if (isHost && player.id !== currentPlayerId) {
+        <button
+          class="kick-button"
+          (click)="kickPlayer(player)"
+          title="Kick player"
+        >
+          ✕
+        </button>
+        }
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="status">
+    <h3>Game Status</h3>
+    <p>{{ lobby.gameState }}</p>
+  </div>
+
+  @if (canStartGame) {
+  <button class="start-game-button" (click)="startGame()">Start Game</button>
+  } @else if (isHost) {
+  <p class="waiting-message">
+    Waiting for more players to join (minimum 2 players needed)
+  </p>
+  }
+</div>

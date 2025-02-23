@@ -1,0 +1,26 @@
+<div class="container">
+  <h1>Luna Academy: Trial of Numbers</h1>
+
+  <div class="create-game">
+    <h2>Create New Game</h2>
+    <input
+      type="text"
+      [(ngModel)]="playerName"
+      placeholder="Enter your name"
+      required
+      [disabled]="isLoading"
+    />
+    <button
+      (click)="createLobby()"
+      [disabled]="!playerName.trim() || isLoading"
+    >
+      {{ isLoading ? 'Creating...' : 'Create Game' }}
+    </button>
+
+    @if (error) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+    }
+  </div>
+</div>

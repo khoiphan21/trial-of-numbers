@@ -1,0 +1,23 @@
+<div class="container">
+  <h1>Join Game</h1>
+
+  <div class="join-form">
+    <h2>Enter Your Name</h2>
+    <input
+      type="text"
+      [(ngModel)]="playerName"
+      placeholder="Your name"
+      required
+      [disabled]="isLoading"
+    />
+    <button (click)="joinLobby()" [disabled]="!playerName.trim() || isLoading">
+      {{ isLoading ? 'Joining...' : 'Join Game' }}
+    </button>
+
+    @if (error) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+    }
+  </div>
+</div>
