@@ -12,5 +12,6 @@ export const makeNumberGuess = createMakeFunction<NumberGuess>(
     numbers: [],
     isCorrect: false,
     submittedAt: new Date().getTime(),
+    allocatedPoints: 0,
   })
 );

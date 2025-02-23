@@ -31,6 +31,7 @@ function makeHintBoard(
     acc[index] = {
       hints: [],
       slotIndex: index,
+      slotValue: gameSession.numberSet[index],
     };
     return acc;
   }, {} as Record<number, HintBoardColumn>);
@@ -50,10 +51,23 @@ function makeHintBoard(
     sortedColumns: Object.values(hintMap)
       .map((column) => ({
         ...column,
-        hints: column.hints.sort((a, b) => a.submittedAt - b.submittedAt),
+        hints: sortHints(column.hints),
       }))
       .sort((a, b) => a.slotIndex - b.slotIndex),
   };
 
   return hintBoard;
+}
+
+function sortHints(hints: HintSubmission[]): HintSubmission[] {
+  // first split the hints into correct and incorrect
+  const correctHints = hints
+    .filter((hint) => hint.isCorrect)
+    .sort((a, b) => a.submittedAt - b.submittedAt);
+  const incorrectHints = hints
+    .filter((hint) => !hint.isCorrect)
+    .sort((a, b) => a.submittedAt - b.submittedAt);
+
+  // then combine the sorted hints
+  return [...correctHints, ...incorrectHints];
 }

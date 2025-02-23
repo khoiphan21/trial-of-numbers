@@ -1,11 +1,37 @@
 <div class="game-board">
+  @if (hasAllGuesses$ | async) {
+  <div class="submit-guess-container">
+    <button
+      class="submit-guess-button"
+      (click)="submitFinalGuess()"
+      role="button"
+      aria-label="Submit final guess"
+      [disabled]="finalGuessSubmitted"
+    >
+      Submit Final Guess
+    </button>
+  </div>
+  }
+
   <div class="columns">
     @for (column of hintBoard.sortedColumns; track column.slotIndex) {
     <div class="column">
-      <div class="slot-label">{{ column.slotIndex + 1 }}</div>
+      <div class="guess-input-container">
+        <input
+          type="text"
+          class="guess-input"
+          [attr.aria-label]="'Guess for digit ' + (column.slotIndex + 1)"
+          (input)="onGuessInput($event, column.slotIndex)"
+          placeholder="#"
+          maxlength="1"
+        />
+      </div>
       <div class="hints-container">
         @for (hint of column.hints; track hint.id) {
-        <app-hint-card [hint]="hint"></app-hint-card>
+        <app-hint-card
+          [hint]="hint"
+          [slotValue]="column.slotValue"
+        ></app-hint-card>
         }
       </div>
     </div>

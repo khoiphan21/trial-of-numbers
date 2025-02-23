@@ -14,7 +14,7 @@ import {
   Injectable,
   Input,
 } from '@angular/core';
-import { addHintSubmission, selectAllHintTypes } from '@luna/api';
+import { addHintSubmission, selectAllHintTypes, validateHint } from '@luna/api';
 import { HintBoard, HintType } from '@luna/definitions';
 import { makeHintSubmission } from '@luna/model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -237,14 +237,22 @@ export class PlayerHandComponent {
   async submitAllHints() {
     const selectedHints = this.selectedHints$.value;
     const submissions = Object.entries(selectedHints)
-      .map(([slotIndex, hintType]) => {
+      .map(([slotIndexString, hintType]) => {
+        const slotIndex = parseInt(slotIndexString);
+
         if (!hintType) return null;
+
+        const isCorrect = validateHint(
+          hintType,
+          this.hintBoard.sortedColumns[slotIndex].slotValue
+        );
 
         return makeHintSubmission({
           hintTypeId: hintType.id,
-          slotIndex: parseInt(slotIndex),
           gameSessionId: this.hintBoard.id,
           playerId: localStorage.getItem('playerId') || '',
+          isCorrect,
+          slotIndex,
         });
       })
       .filter(Boolean);

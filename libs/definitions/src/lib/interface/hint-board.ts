@@ -8,4 +8,5 @@ export interface HintBoard {
 export interface HintBoardColumn {
   readonly hints: HintSubmission[];
   readonly slotIndex: number;
+  readonly slotValue: number;
 }

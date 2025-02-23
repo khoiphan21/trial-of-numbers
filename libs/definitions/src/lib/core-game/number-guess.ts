@@ -8,4 +8,5 @@ export interface NumberGuess extends AppEntity {
   readonly numbers: number[];
   readonly isCorrect: boolean;
   readonly submittedAt: TimestampInMilliseconds;
+  readonly allocatedPoints: number;
 }

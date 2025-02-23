@@ -6,17 +6,14 @@ import {
   inject,
 } from '@angular/core';
 import {
-  AbstractControl,
   FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import {
   addHintType,
-  deleteHintType,
   getHintType,
   hardDeleteHintType,
   selectAllHintTypes,
@@ -24,8 +21,8 @@ import {
 } from '@luna/api';
 import { HintType } from '@luna/definitions';
 import { makeHintType } from '@luna/model';
-import { BehaviorSubject } from 'rxjs';
 import jexl from 'jexl';
+import { BehaviorSubject } from 'rxjs';
 
 interface EditingState {
   id: string;
@@ -61,7 +58,7 @@ export class HintTypesComponent {
 
   playgroundForm = this.fb.group({
     selectedHintTypeId: ['', Validators.required],
-    slotNumber: [''],
+    slotValue: [''],
     leftNumber: [''],
     rightNumber: [''],
   });
@@ -143,8 +140,8 @@ export class HintTypesComponent {
 
     try {
       const context = {
-        slotNumber: this.playgroundForm.value.slotNumber
-          ? Number(this.playgroundForm.value.slotNumber)
+        slotValue: this.playgroundForm.value.slotValue
+          ? Number(this.playgroundForm.value.slotValue)
           : -1,
         leftNumber: this.playgroundForm.value.leftNumber
           ? Number(this.playgroundForm.value.leftNumber)

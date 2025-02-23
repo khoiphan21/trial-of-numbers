@@ -1,3 +1,16 @@
-<div *ngIf="hintType$ | async as hintType">
-  <p>{{ hintType.name }}</p>
-</div>
+<ng-container
+  *ngIf="{
+  hintType: hintType$ | async,
+} as context"
+>
+  <div
+    *ngIf="context.hintType as hintType"
+    class="hint-card"
+    [class.correct]="hint.isCorrect"
+    [class.incorrect]="!hint.isCorrect"
+  >
+    <div class="hint-content">
+      {{ hintType.name }}
+    </div>
+  </div>
+</ng-container>
