@@ -26,7 +26,8 @@
     @if ((hintTypes$ | async)?.length) { @for (hintType of hintTypes$ | async;
     track hintType.id) {
     <div class="hint-type-item">
-      @if (editingState && editingState.id === hintType.id) {
+      @if (isEditing && editingState && editingState.id === hintType.id ) {
+
       <form [formGroup]="editingState.form" class="edit-form">
         <input
           formControlName="name"
@@ -43,7 +44,6 @@
           placeholder="Validation Rule (JEXL expression)"
           aria-label="Edit validation rule"
         />
-        @if (editingState) {
         <div class="button-group">
           <button
             type="button"
@@ -57,7 +57,6 @@
             Cancel
           </button>
         </div>
-        }
       </form>
       } @else {
       <h3>{{ hintType.name }}</h3>

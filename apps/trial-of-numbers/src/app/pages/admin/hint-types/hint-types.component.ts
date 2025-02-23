@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -13,6 +18,7 @@ import {
   addHintType,
   deleteHintType,
   getHintType,
+  hardDeleteHintType,
   selectAllHintTypes,
   updateHintType,
 } from '@luna/api';
@@ -42,6 +48,7 @@ interface ValidationResult {
 })
 export class HintTypesComponent {
   private fb = inject(FormBuilder);
+  private cd = inject(ChangeDetectorRef);
 
   hintTypes$ = selectAllHintTypes();
   validationResult$ = new BehaviorSubject<ValidationResult | null>(null);
@@ -57,9 +64,11 @@ export class HintTypesComponent {
     context: ['{}', [Validators.required, this.validateJson]],
   });
 
+  isEditing = false;
   editingState?: EditingState;
 
   startEditing(hintType: HintType) {
+    this.isEditing = true;
     this.editingState = {
       id: hintType.id,
       form: this.fb.group({
@@ -71,7 +80,9 @@ export class HintTypesComponent {
   }
 
   cancelEditing() {
+    this.isEditing = false;
     this.editingState = undefined;
+    this.cd.detectChanges();
   }
 
   async addHintType() {
@@ -94,7 +105,7 @@ export class HintTypesComponent {
 
   async deleteHintType(id: string) {
     try {
-      await deleteHintType(id);
+      await hardDeleteHintType(id);
     } catch (error) {
       console.error('Error deleting hint type:', error);
       // Here you might want to show an error message to the user
@@ -102,15 +113,26 @@ export class HintTypesComponent {
   }
 
   async updateHintType(id: string) {
+    this.isEditing = false;
+    this.cd.detectChanges();
     if (!this.editingState?.form.valid) return;
 
     try {
-      const updates = this.editingState.form.value;
-      await updateHintType(id, updates);
-      this.editingState = undefined;
+      console.log('updating');
+      const updates = {
+        name: this.editingState.form.value.name,
+        description: this.editingState.form.value.description,
+        validationRule: this.editingState.form.value.validationRule,
+      };
+
+      await updateHintType(id, { replace: updates });
+
+      console.log('updated');
     } catch (error) {
       console.error('Error updating hint type:', error);
-      // Here you might want to show an error message to the user
+    } finally {
+      this.editingState = undefined;
+      this.cd.detectChanges();
     }
   }
 
