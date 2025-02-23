@@ -11,5 +11,6 @@ export const makeHintSubmission = createMakeFunction<HintSubmission>(
     hintTypeId: '',
     submittedAt: Date.now(),
     isCorrect: false,
+    slotIndex: 0,
   })
 );

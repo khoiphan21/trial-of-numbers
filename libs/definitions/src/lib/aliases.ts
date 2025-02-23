@@ -13,6 +13,7 @@ export type LobbySessionId = UUID;
 export type GameSessionId = UUID;
 export type GameId = UUID;
 export type PlayerId = UUID;
+export type HintTypeId = UUID;
 
 export type EmailAddress = string;
 export type HexColor = string; // Such as '#000000', '#FF0000', '#0000FF', etc.
