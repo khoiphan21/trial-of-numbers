@@ -1,9 +1,10 @@
-import { GameSessionId, PlayerId } from '../aliases';
+import { GameSessionId, PlayerId, TimestampInMilliseconds } from '../aliases';
+import { AppEntity } from '../app-entity';
 
-export interface HintSubmission {
-  playerId: PlayerId;
-  gameSessionId: GameSessionId;
-  hintTypeId: string;
-  submittedAt: Date;
-  isCorrect: boolean;
+export interface HintSubmission extends AppEntity {
+  readonly playerId: PlayerId;
+  readonly gameSessionId: GameSessionId;
+  readonly hintTypeId: string;
+  readonly submittedAt: TimestampInMilliseconds;
+  readonly isCorrect: boolean;
 }

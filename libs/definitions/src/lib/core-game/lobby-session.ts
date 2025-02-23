@@ -3,7 +3,7 @@ import { AppEntity } from '../app-entity';
 import { GameState } from './game-state';
 
 export interface LobbySession extends AppEntity {
-  hostId: PlayerId;
-  joinCode: string;
-  gameState: GameState;
+  readonly hostId: PlayerId;
+  readonly joinCode: string;
+  readonly gameState: GameState;
 }
