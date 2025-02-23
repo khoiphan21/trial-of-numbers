@@ -1,16 +1,21 @@
-<div class="container">
+<div
+  class="container"
+  *ngIf="{
+    lobbySession: lobbySession$ | async,
+    players: players$ | async
+  } as context"
+>
+  @if (context.lobbySession && context.players) { @if
+  (context.lobbySession.gameState === 'waiting') {
   <h1>Lobby</h1>
-
-  @if (lobbySession$ | async; as lobby) { @if (lobby.gameState === 'waiting') {
-  @if (players$ | async; as players) {
   <app-lobby-in-waiting
-    [lobby]="lobby"
-    [players]="players"
+    [lobby]="context.lobbySession"
+    [players]="context.players"
     [currentPlayerId]="currentPlayerId"
     [isHost]="isHost"
   />
-  } } @else {
-  <app-game-in-progress [lobby]="lobby" />
+  } @else {
+  <app-game-in-progress [lobby]="context.lobbySession" />
   } } @else {
   <div class="loading">Loading lobby...</div>
   }

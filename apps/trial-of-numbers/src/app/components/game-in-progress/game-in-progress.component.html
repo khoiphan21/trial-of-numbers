@@ -1,4 +1,35 @@
-<div class="game-container">
-  <h2>Game in Progress</h2>
-  <!-- Game UI will go here -->
+<!-- this should take up the remaining vertical space, and fill the width of the screen -->
+<div
+  class="game-container"
+  *ngIf="{
+    activeGameSession: activeGameSession$ | async,
+    hintBoard: hintBoard$ | async
+  } as context"
+>
+  <h2>Round {{ context.activeGameSession?.roundNumber ?? 1 }}</h2>
+
+  <!-- Player List -->
+  <div class="player-list">
+    @for (player of players$ | async; track player.id) {
+    <div
+      class="player-tag"
+      [class.current-player]="player.id === currentPlayerId"
+    >
+      <span class="player-name">{{ player.name }}</span>
+      <span class="player-score">{{ player.score }}</span>
+    </div>
+    }
+  </div>
+
+  @if (context.hintBoard) {
+  <!-- Game Board -->
+  <div class="game-board">
+    <app-game-board [hintBoard]="context.hintBoard"></app-game-board>
+  </div>
+
+  <!-- Player Hand -->
+  <div class="player-hand">
+    <app-player-hand [hintBoard]="context.hintBoard"></app-player-hand>
+  </div>
+  }
 </div>

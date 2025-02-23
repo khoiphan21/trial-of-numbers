@@ -1,24 +1,180 @@
 .game-container {
-  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  gap: 1rem;
+  background: #f8f9fa;
+  overflow: hidden;
 
   h2 {
-    margin-bottom: 1rem;
-    color: #2196f3;
-    font-size: clamp(1.2rem, 4vw, 1.5rem);
     text-align: center;
+    color: #2196f3;
+    margin: 0;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+  }
+}
+
+.player-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  flex: 0 0 auto;
+
+  .player-tag {
+    background: #e3f2fd;
+    padding: 0.5rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &.current-player {
+      background: #2196f3;
+      color: white;
+    }
+
+    .player-score {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+  }
+}
+
+.game-board {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.hint-board {
+  flex: 1;
+  overflow: hidden;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hint-columns {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.hint-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .slot-label {
+    text-align: center;
+    font-weight: 500;
+    color: #2196f3;
+  }
+
+  .hints-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+  }
+}
+
+.submission-area {
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .current-guesses {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 480px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .guess-slot {
+    text-align: center;
+
+    .slot-label {
+      font-size: 0.875rem;
+      color: #666;
+    }
+
+    .guess-value {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #2196f3;
+      min-height: 2rem;
+    }
+  }
+}
+
+.player-hand {
+  height: 30vh;
+  min-height: 200px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  flex: 0 0 auto;
+}
+
+.hint-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+
+  &.selected {
+    background: #e3f2fd;
+    border-color: #2196f3;
+  }
+
+  &.flipped {
+    background: #ffebee;
+    border-color: #f44336;
+  }
+
+  &:hover:not(.flipped) {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .hint-content {
+    font-size: 0.875rem;
+    text-align: center;
+    color: #333;
   }
 }
 
 @media (min-width: 768px) {
   .game-container {
-    margin: 0 auto 2rem;
-    max-width: 400px;
+    padding: 2rem;
+  }
+
+  .hint-columns {
     padding: 1.5rem;
   }
 }

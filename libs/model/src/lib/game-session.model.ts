@@ -9,5 +9,6 @@ export const makeGameSession = createMakeFunction<GameSession>(
     lobbySessionId: '',
     roundNumber: 1,
     numberSet: [],
+    gameSessionState: 'in_progress',
   })
 );

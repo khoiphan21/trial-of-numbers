@@ -9,6 +9,7 @@ import { LobbySession, Player } from '@luna/definitions';
 import { Observable, switchMap } from 'rxjs';
 import { LobbyInWaitingComponent } from '../../components/lobby-in-waiting/lobby-in-waiting.component';
 import { GameInProgressComponent } from '../../components/game-in-progress/game-in-progress.component';
+import { filterUndefinedValues } from '@luna/core';
 
 @Component({
   selector: 'app-lobby-session-page',
@@ -29,8 +30,11 @@ export class LobbySessionPageComponent implements OnInit {
   isHost = false;
 
   ngOnInit(): void {
+    console.log('joinCode', this.joinCode);
     if (this.joinCode) {
-      this.lobbySession$ = selectLobbySessionByCode(this.joinCode);
+      this.lobbySession$ = selectLobbySessionByCode(this.joinCode).pipe(
+        filterUndefinedValues()
+      );
 
       this.players$ = this.lobbySession$.pipe(
         switchMap((lobby) => {

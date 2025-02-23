@@ -7,7 +7,6 @@ import {
 import { AdminComponent } from './pages/admin/admin.component';
 import { HintTypesComponent } from './pages/admin/hint-types/hint-types.component';
 import { LobbiesComponent } from './pages/admin/lobbies/lobbies.component';
-import { LobbyPageComponent } from './pages/lobby/lobby-page.component';
 
 export const routes: Routes = [
   {

@@ -7,6 +7,7 @@ interface StartNewGameSessionInput {
   lobby: LobbySession;
   digitCount: DigitCount;
 }
+
 export async function startNewGameSession(input: StartNewGameSessionInput) {
   const { lobby, digitCount } = input;
 

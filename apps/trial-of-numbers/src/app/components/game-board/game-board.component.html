@@ -1,0 +1,14 @@
+<div class="game-board">
+  <div class="columns">
+    @for (column of hintBoard.sortedColumns; track column.slotIndex) {
+    <div class="column">
+      <div class="slot-label">{{ column.slotIndex + 1 }}</div>
+      <div class="hints-container">
+        @for (hint of column.hints; track hint.id) {
+        <app-hint-card [hint]="hint"></app-hint-card>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  height: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.game-board {
+  height: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.columns {
+  display: inline-flex;
+  gap: 1rem;
+  padding: 1rem;
+  min-width: min-content;
+  height: fit-content;
+
+  // Horizontal scrollbar styling
+  scrollbar-width: thin;
+  scrollbar-color: #90caf9 transparent;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #90caf9;
+    border-radius: 3px;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 160px;
+  flex: 0 0 auto;
+
+  .slot-label {
+    text-align: center;
+    font-weight: 500;
+    color: #2196f3;
+    padding: 0.5rem;
+    background: #e3f2fd;
+    border-radius: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .hints-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.25rem;
+  }
+}
